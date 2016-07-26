@@ -14,7 +14,7 @@ Variáveis globais usam 3.985 bytes (48%) de memória dinâmica, deixando 4.207 
 #include <HMC5883L.h>
 #include <NewPing.h>
 #include <Firmata.h>
-#include <Math.h>
+//#include <Math.h>
 
 #define MAXNODES 144
 #define MAXNODES_byte 18 //MAXNODES / 8
