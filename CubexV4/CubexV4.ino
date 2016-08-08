@@ -1,9 +1,10 @@
 /*
 CUBEX v4.0
 Thairone S. Loureiro
+2016
 
-usando 18.630 bytes (7%) de espaço de armazenamento para programas
-Variáveis globais usam 3.985 bytes (48%) de memória dinâmica, deixando 4.207 bytes para variáveis locais. O máximo são 8.192 bytes.
+usando 20.990 bytes (8%) de espaço de armazenamento para programas
+Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 bytes para variáveis locais. O máximo são 8.192 bytes.
 */
 
 
@@ -78,6 +79,7 @@ void setup()
   Serial.println();        Serial.println();        Serial.println();
   Serial.println("****************************************");
 
+  //Caso seja usada a memoria EEPROM para datalog...
   /*
     EEPROM.write(0, 1);
     EEPROM.write(1, 1);
@@ -135,13 +137,13 @@ void setup()
     EEPROM.write(49, 0);
     ... EEPROM.write(143, 0);
   */
-  novo_obstaculo = false;
-  chegou = false;
-  fim = false;
-  destino_fora_da_grade=false;
+  novo_obstaculo = false; //variável global que indica a existência de novo obstáculo.
+  chegou = false; //variável global que indica a chegada ao nó destino
+  fim = false; //variável global que indica fim do algorítimo
+  destino_fora_da_grade=false; //indica quando o nó de destino está fora da grade mapeada.
 
   posicao_atual = 64; //posicao inicial no meio do grid
-  //destino = 7;
+  
   destino =  getDestino();
 
   direcao = getDirecao(); //deve obter a orientacao
