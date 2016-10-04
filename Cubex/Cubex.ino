@@ -25,6 +25,7 @@ Variáveis globais usam 3.985 bytes (48%) de memória dinâmica, deixando 4.207 
 #define PASSO 2000
 #define GIRO_90 2000
 
+#define RSSI_PIN 10
 #define TRIGGER_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
