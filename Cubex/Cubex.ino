@@ -15,25 +15,22 @@ Variáveis globais usam 3.985 bytes (48%) de memória dinâmica, deixando 4.207 
 #include <NewPing.h>
 #include <Firmata.h>
 #include <math.h>
+#include <Servo.h>
 
 #define MAXNODES 144
 #define MAXNODES_byte 18 //MAXNODES / 8
 #define ROW 12
 #define COL 12
 #define LADO_CUBO 20  //DIMENSAO DE CADA LADO DO QUADRADO (CELULA) NO ESPAÇO
-#define PASSO 4000
-#define GIRO_90 4000
-
-#define STEP_PIN_M1 8
-#define STEP_PIN_M2 6
-#define DIR_PIN_M1 9
-#define DIR_PIN_M2 7
-#define RSSI_PIN 10
+#define PASSO 2000
+#define GIRO_90 2000
 
 #define TRIGGER_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
+Servo servoLeft;
+Servo servoRight;
 
 boolean grid[ROW][COL];
 /*
@@ -68,10 +65,9 @@ void setup()
   bussola.SetScale(1.3);
   bussola.SetMeasurementMode(Measurement_Continuous);
 
-  pinMode(STEP_PIN_M1, OUTPUT);
-  pinMode(STEP_PIN_M2, OUTPUT);
-  pinMode(DIR_PIN_M1, OUTPUT);
-  pinMode(DIR_PIN_M2, OUTPUT);
+  servoLeft.attach(8);  
+  servoRight.attach(6); 
+  
   pinMode(RSSI_PIN, INPUT);
 
   
@@ -775,83 +771,51 @@ boolean frente(int step_motor) {
     ret=true;
     Serial.println("FRENTE");
 
-    digitalWrite(DIR_PIN_M1, LOW);     // Set the direction.
-    delay(100);
-    digitalWrite(DIR_PIN_M2, HIGH);     // Set the direction.
-    delay(100);
-
-    int i;
-    for (i = 0; i < step_motor; i++)     // Iterate for 4000 microsteps.
-    {
-      digitalWrite(STEP_PIN_M1, LOW);  // This LOW to HIGH change is what creates the
-      digitalWrite(STEP_PIN_M2, HIGH);
-      digitalWrite(STEP_PIN_M1, HIGH);  // "Rising Edge" so the easydriver knows to when to step.
-      digitalWrite(STEP_PIN_M2, LOW);
-      delayMicroseconds(500);      // This delay time is close to top speed for this
-    }
+    servoLeft.write(0);
+    servoRight.write(180);
+    delay(step_motor);
+    //delayMicroseconds(500);     
   }
   
   return ret;
 }
 
-/*
+
 void re(int step_motor) {
   //deve checar obstaculo.
   //se houver deve marcar no grid o quadro de tras como sendo ocupado
   Serial.println("RE");
-  digitalWrite(DIR_PIN_M1, HIGH);     // Set the direction.
-  delay(100);
-  digitalWrite(DIR_PIN_M2, LOW);     // Set the direction.
-  delay(100);
-
-  int i;
-  for (i = 0; i < step_motor; i++)     // Iterate for 4000 microsteps.
-  {
-    digitalWrite(STEP_PIN_M1, HIGH);  // This LOW to HIGH change is what creates the
-    digitalWrite(STEP_PIN_M2, LOW);
-    digitalWrite(STEP_PIN_M1, LOW);  // "Rising Edge" so the easydriver knows to when to step.
-    digitalWrite(STEP_PIN_M2, HIGH);
-    delayMicroseconds(500);      // This delay time is close to top speed for this
-  }
+  
+  servoLeft.write(180);
+  servoRight.write(0);
+  delay(step_motor);
 }
-*/
+
 
 void esquerda(int step_motor) {
   Serial.println("ESQUERDA");
 
-  digitalWrite(DIR_PIN_M1, LOW);     // Set the direction.
-  delay(100);
-  digitalWrite(DIR_PIN_M2, LOW);     // Set the direction.
-  delay(100);
-
-  int i;
-  for (i = 0; i < step_motor; i++)     // Iterate for 4000 microsteps.
-  {
-    digitalWrite(STEP_PIN_M1, LOW);  // This LOW to HIGH change is what creates the
-    digitalWrite(STEP_PIN_M2, HIGH);
-    digitalWrite(STEP_PIN_M1, LOW);  // "Rising Edge" so the easydriver knows to when to step.
-    digitalWrite(STEP_PIN_M2, HIGH);
-    delayMicroseconds(500);      // This delay time is close to top speed for this
-  }
+  servoLeft.write(0);
+  servoRight.write(0);
+  delay(step_motor);
 }
 
 void direita(int step_motor) {
   Serial.println("DIREITA");
-  digitalWrite(DIR_PIN_M1, HIGH);     // Set the direction.
-  delay(100);
-  digitalWrite(DIR_PIN_M2, HIGH);     // Set the direction.
-  delay(100);
 
-  int i;
-  for (i = 0; i < step_motor; i++)     // Iterate for 4000 microsteps.
-  {
-    digitalWrite(STEP_PIN_M1, HIGH);  // This LOW to HIGH change is what creates the
-    digitalWrite(STEP_PIN_M2, LOW);
-    digitalWrite(STEP_PIN_M1, HIGH);  // "Rising Edge" so the easydriver knows to when to step.
-    digitalWrite(STEP_PIN_M2, LOW);
-    delayMicroseconds(500);      // This delay time is close to top speed for this
-  }
+  servoLeft.write(180);
+  servoRight.write(180);
+  delay(step_motor);
 }
+
+void parar(int step_motor) {
+  Serial.println("PARADA");
+
+  servoLeft.write(90);
+  servoRight.write(90);
+  delay(step_motor);
+}
+
 
 int getRow(int ind) {
   int L;
