@@ -18,6 +18,9 @@ Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 
 #include <math.h>
 #include <Servo.h>
 
+#include <BlynkSimpleStream.h>
+
+
 #define MAXNODES 144
 #define MAXNODES_byte 18 //MAXNODES / 8
 #define ROW 12
@@ -33,6 +36,8 @@ Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 
 
 Servo servoLeft;
 Servo servoRight;
+
+char auth[063a8be42cab404ea5966fac76159bd2] = "AUTH TOKEN HERE IN THE QUOTATION MARKS";   //MAKE SURE YOU ENTER YOUR AUTH CODE
 
 boolean grid[ROW][COL];
 /*
@@ -56,9 +61,41 @@ int Qtd_Passos;
 HMC5883L bussola; //Instância a biblioteca para a bússola
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
+int servo_tempo;
+int servo_esq_angulo;
+int servo_dir_angulo;
+int servo_sonar_angulo;
+int disparar_blynk;
+
+int xJoy;
+int yJoy;
+int xPotReading = 1023/2;
+int yPotReading = 1023/2;
+
+BLYNK_WRITE(V0) {
+  servo_tempo = param.asInt();
+}
+BLYNK_WRITE(V1) {
+  servo_esq_angulo = param.asInt();
+}
+BLYNK_WRITE(V2) {
+  servo_dir_angulo = param.asInt();
+}
+BLYNK_WRITE(V3) {
+  servo_sonar_angulo = param.asInt();
+}
+BLYNK_WRITE(V4) {
+  disparar_blynk = param.asInt();
+}
+BLYNK_WRITE(V5) {
+  xPotReading = param[0].asInt();
+  yPotReading = param[1].asInt();
+}
 
 void setup()
 {
+  
+  
   Serial.begin(9600);
   Firmata.begin(57600);
   Wire.begin(); //Inicia a comunicação o I2C
@@ -66,6 +103,9 @@ void setup()
   bussola = HMC5883L();
   bussola.SetScale(1.3);
   bussola.SetMeasurementMode(Measurement_Continuous);
+
+
+  Blynk.begin(auth);
 
   servoLeft.attach(8);  
   servoRight.attach(6); 
@@ -946,6 +986,23 @@ String passo() {
 }
 
 void loop() {
+
+  Blynk.run();
+  if(disparar_blynk==1{
+    servoLeft.write(servo_esq_angulo);
+    servoRight.write(servo_dir_angulo);
+    delay(servo_tempo);
+
+    disparar_blynk=0;
+    servoLeft.write(90);
+    servoRight.write(90);
+    delay(5000);
+
+    xTemp = map(xPotReading, 0, 1023, 0, 180); 
+    yTemp = map(yPotReading,0 ,1023, 0, 180);
+  }
+  
+  /*
   String dir;
   if (novo_obstaculo == true)
   {
@@ -1008,4 +1065,5 @@ void loop() {
       Serial.println(dir);
     }
   }
+  */
 }
