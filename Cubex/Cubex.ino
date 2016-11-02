@@ -18,7 +18,22 @@ Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 
 #include <math.h>
 #include <Servo.h>
 
+#include <SoftwareSerial.h>
+SoftwareSerial DebugSerial(0, 1); // RX, TX
+#define BLYNK_PRINT DebugSerial
 #include <BlynkSimpleStream.h>
+
+// 3 - PIN1 TX Mega -> RX HC-06
+// 2 - PIN0 RX Mega -> TX HC-06
+// 96 - A1 - TRIGGER_PIN
+// 97 - A0 - ECHO_PIN
+// 23 - PWM10 - SERVO R
+// 18 - PWM9 - SERVO SONAR
+// 17 - PWM8 - SERVO R
+
+
+char auth[] = "063a8be42cab404ea5966fac76159bd2";   //MAKE SURE YOU ENTER YOUR AUTH CODE
+//char auth[] = "";
 
 
 #define MAXNODES 144
@@ -27,17 +42,32 @@ Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 
 #define COL 12
 #define LADO_CUBO 20  //DIMENSAO DE CADA LADO DO QUADRADO (CELULA) NO ESPAÇO
 #define PASSO 2000
-#define GIRO_90 2000
+#define GIRO_90 1000
 
-#define RSSI_PIN 10
-#define TRIGGER_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define RSSI_PIN 11
+#define TRIGGER_PIN  1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN     0  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+
+/*
+#define servoLeft_parado 84
+#define servoLeft_re 79 
+#define servoLeft_frente 89
+#define servoRight_parado 81 
+#define servoRight_re 86
+#define servoRight_frente 76
+*/
+#define servoLeft_parado 84
+#define servoLeft_re 79 
+#define servoLeft_frente 89
+
+#define servoRight_parado 81 
+#define servoRight_re 86
+#define servoRight_frente 76
+
 
 Servo servoLeft;
 Servo servoRight;
-
-char auth[063a8be42cab404ea5966fac76159bd2] = "AUTH TOKEN HERE IN THE QUOTATION MARKS";   //MAKE SURE YOU ENTER YOUR AUTH CODE
 
 boolean grid[ROW][COL];
 /*
@@ -61,43 +91,66 @@ int Qtd_Passos;
 HMC5883L bussola; //Instância a biblioteca para a bússola
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
-int servo_tempo;
-int servo_esq_angulo;
-int servo_dir_angulo;
-int servo_sonar_angulo;
+int cmd_parado;
+int cmd_frente;
+int cmd_re;
+int cmd_esquerda;
+int cmd_direita;
 int disparar_blynk;
 
 int xJoy;
 int yJoy;
-int xPotReading = 1023/2;
-int yPotReading = 1023/2;
+//int xPotReading = 1023/2;
+//int yPotReading = 1023/2;
+int xPotReading = 128;
+int yPotReading = 128;
 
 BLYNK_WRITE(V0) {
-  servo_tempo = param.asInt();
+  cmd_frente = param.asInt();
+  Serial.println();
+  Serial.print("V0: ");
+  Serial.println(cmd_frente);
 }
 BLYNK_WRITE(V1) {
-  servo_esq_angulo = param.asInt();
+  cmd_esquerda = param.asInt();
+  Serial.println();
+  Serial.print("V1: ");
+  Serial.println(cmd_esquerda);
 }
 BLYNK_WRITE(V2) {
-  servo_dir_angulo = param.asInt();
+  cmd_direita = param.asInt();
+  Serial.println();
+  Serial.print("V2: ");
+  Serial.println(cmd_direita);
 }
 BLYNK_WRITE(V3) {
-  servo_sonar_angulo = param.asInt();
+  cmd_re = param.asInt();
+  Serial.println();
+  Serial.print("V3: ");
+  Serial.println(cmd_re);
 }
 BLYNK_WRITE(V4) {
-  disparar_blynk = param.asInt();
+  cmd_parado = param.asInt();
+  Serial.println();
+  Serial.print("V3: ");
+  Serial.println(cmd_parado);
 }
+
 BLYNK_WRITE(V5) {
-  xPotReading = param[0].asInt();
-  yPotReading = param[1].asInt();
+  disparar_blynk = param.asInt();
+  Serial.println();
+  Serial.print("V4: ");
+  Serial.println(disparar_blynk);
 }
+
 
 void setup()
 {
   
   
   Serial.begin(9600);
-  Firmata.begin(57600);
+  //Firmata.begin(57600);
+  Firmata.begin(9600);
   Wire.begin(); //Inicia a comunicação o I2C
   //Configura a bússola
   bussola = HMC5883L();
@@ -105,17 +158,21 @@ void setup()
   bussola.SetMeasurementMode(Measurement_Continuous);
 
 
-  Blynk.begin(auth);
+  Blynk.begin(auth,Serial);
 
-  servoLeft.attach(8);  
-  servoRight.attach(6); 
+  servoLeft.attach(10,544,2400);  
+  servoRight.attach(8,544,2400); 
+
+
+
+
   
   pinMode(RSSI_PIN, INPUT);
 
   
   Serial.println();        Serial.println();        Serial.println();
   Serial.println("****************************************");
-
+ Serial.println("Inicio...");
   //Caso seja usada a memoria EEPROM para datalog...
   /*
     EEPROM.write(0, 1);
@@ -179,6 +236,7 @@ void setup()
   fim = false; //variável global que indica fim do algorítimo
   destino_fora_da_grade=false; //indica quando o nó de destino está fora da grade mapeada.
 
+  /*
   posicao_atual = 64; //posicao inicial no meio do grid
   
   destino =  getDestino();
@@ -197,6 +255,7 @@ void setup()
     Serial.println("Nao Ha rota para este destino.");
     Firmata.sendString("SEM_ROTA");
   }
+  */
 }
 
 int getRSSI() {
@@ -814,8 +873,8 @@ boolean frente(int step_motor) {
     ret=true;
     Serial.println("FRENTE");
 
-    servoLeft.write(0);
-    servoRight.write(180);
+    servoLeft.write(servoLeft_frente);
+    servoRight.write(servoRight_frente);
     delay(step_motor);
     //delayMicroseconds(500);     
   }
@@ -829,8 +888,8 @@ void re(int step_motor) {
   //se houver deve marcar no grid o quadro de tras como sendo ocupado
   Serial.println("RE");
   
-  servoLeft.write(180);
-  servoRight.write(0);
+  servoLeft.write(servoLeft_re);
+  servoRight.write(servoRight_re);
   delay(step_motor);
 }
 
@@ -838,24 +897,24 @@ void re(int step_motor) {
 void esquerda(int step_motor) {
   Serial.println("ESQUERDA");
 
-  servoLeft.write(0);
-  servoRight.write(0);
+  servoLeft.write(servoLeft_re);
+  servoRight.write(servoRight_frente);
   delay(step_motor);
 }
 
 void direita(int step_motor) {
   Serial.println("DIREITA");
 
-  servoLeft.write(180);
-  servoRight.write(180);
+  servoLeft.write(servoLeft_frente);
+  servoRight.write(servoRight_re);
   delay(step_motor);
 }
 
 void parar(int step_motor) {
   Serial.println("PARADA");
 
-  servoLeft.write(90);
-  servoRight.write(90);
+  servoLeft.write(servoLeft_parado);
+  servoRight.write(servoRight_parado);
   delay(step_motor);
 }
 
@@ -988,20 +1047,55 @@ String passo() {
 void loop() {
 
   Blynk.run();
-  if(disparar_blynk==1{
-    servoLeft.write(servo_esq_angulo);
-    servoRight.write(servo_dir_angulo);
-    delay(servo_tempo);
-
-    disparar_blynk=0;
-    servoLeft.write(90);
-    servoRight.write(90);
-    delay(5000);
-
-    xTemp = map(xPotReading, 0, 1023, 0, 180); 
-    yTemp = map(yPotReading,0 ,1023, 0, 180);
-  }
+  if(disparar_blynk==1){
+    //servoLeft.write(servo_esq_angulo);
+    //servoRight.write(servo_dir_angulo);
+    
+  if(cmd_parado)
+    parar(1000);
+  //else
+    
+  if (cmd_frente) 
+      frente(1000); 
+   else  if (cmd_re) 
+          re(1000);
+        else if(cmd_esquerda)
+        esquerda(1000);
+          else if (cmd_direita) 
+           direita(1000);
+else  parar(1000);
   
+   // servoLeft.write(85);
+   // servoRight.write(85);
+   // delay(10000);
+
+    //xTemp = map(xPotReading, 0, 1023, 0, 180); 
+    //yTemp = map(yPotReading,0 ,1023, 0, 180);
+  }
+  else
+   parar(1000);
+ // else{
+ /*
+    servoLeft.write(89); //84 parado /  (79) - re   /   (89) - frente
+    servoRight.write(76); //81 parado /  (85) - frente /  (76) re 
+    delay(1000);
+    servoLeft.write(84); 
+    servoRight.write(81); 
+    delay(5000);
+    servoLeft.write(79); 
+    servoRight.write(85); 
+    delay(3000);
+*/
+    //servoLeft
+    //84 parado
+    //79 re
+    //89 frentre
+
+    //servoRight
+    //81 parado
+    //85 re
+    //76 frentre
+  //  }
   /*
   String dir;
   if (novo_obstaculo == true)
