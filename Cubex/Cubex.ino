@@ -32,7 +32,7 @@ SoftwareSerial DebugSerial(0, 1); // RX, TX
 // 17 - PWM8 - SERVO R
 
 
-char auth[] = "063a8be42cab404ea5966fac76159bd2";   //MAKE SURE YOU ENTER YOUR AUTH CODE
+char auth[] = "bcd9b0bfe4dd4ec6891f11ff40a52860";   //MAKE SURE YOU ENTER YOUR AUTH CODE
 //char auth[] = "";
 
 
@@ -97,6 +97,7 @@ int cmd_re;
 int cmd_esquerda;
 int cmd_direita;
 int disparar_blynk;
+int valor_passo;
 
 int xJoy;
 int yJoy;
@@ -104,6 +105,10 @@ int yJoy;
 //int yPotReading = 1023/2;
 int xPotReading = 128;
 int yPotReading = 128;
+
+BLYNK_WRITE(V6) {
+  cmd_parado= param.asInt();
+}
 
 BLYNK_WRITE(V0) {
   cmd_frente = param.asInt();
@@ -1056,14 +1061,14 @@ void loop() {
   //else
     
   if (cmd_frente) 
-      frente(1000); 
+      frente(cmd_parado); 
    else  if (cmd_re) 
-          re(1000);
+          re(cmd_parado);
         else if(cmd_esquerda)
-        esquerda(1000);
+        esquerda(cmd_parado);
           else if (cmd_direita) 
-           direita(1000);
-else  parar(1000);
+           direita(cmd_parado);
+else  parar(cmd_parado);
   
    // servoLeft.write(85);
    // servoRight.write(85);
@@ -1073,7 +1078,7 @@ else  parar(1000);
     //yTemp = map(yPotReading,0 ,1023, 0, 180);
   }
   else
-   parar(1000);
+   parar(cmd_parado);
  // else{
  /*
     servoLeft.write(89); //84 parado /  (79) - re   /   (89) - frente
