@@ -21,7 +21,16 @@ color cor_block=#DC143C;
 color cor_alvo=#FFFF00;
 color cor_atual=#DAA520;
 color cor_visitado=#8FBC8F;
-String direcao="N";
+
+final int Dir_N=0;
+final int Dir_NE=1;
+final int Dir_L=2;
+final int Dir_SE=3;
+final int Dir_S=4;
+final int Dir_SO=5;
+final int Dir_O=6;
+final int Dir_NO=7;
+int direcao=0;
 boolean moveu=false;
 StringList path_taken;
 StringList path_found;
@@ -61,6 +70,7 @@ void setup() {
 void draw() {
   int x, y, ind;
   String ind_s="";
+  String dir_s="";
   String cmd="";
 
   if (porta.available() > 0) {
@@ -102,10 +112,12 @@ void draw() {
         c3=ind_atual;
       }
     } else if (cmd!=null && cmd.length()>20 && cmd.substring(0, 20).equals("[P][DIRECAO_TEORICA]")) {        
-      direcao=trim(cmd.substring(20));
+      dir_s=trim(cmd.substring(20));
+      direcao=int(dir_s);
     } else if (cmd!=null && cmd.length()>12 && cmd.substring(0, 12).equals("[P][DIRECAO]")) {  
-      direcao=trim(cmd.substring(12));
-      path_taken.append(direcao);
+      dir_s=trim(cmd.substring(12));
+      direcao=int(dir_s);
+      path_taken.append("dir:"+dir_s);
     } else if (cmd!=null && cmd.length()>14 && cmd.substring(0, 14).equals("[P][CLEARGRID]")) {  
       for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
@@ -236,35 +248,35 @@ class Cell {
     pushMatrix(); // remember current drawing matrix)
     translate(x, y);
     switch (direcao) {
-    case "N":
+    case Dir_N:
       rotate(radians(0)); // rotate 45 degrees
       image(img, 0, 0, 50, 50);
       break;
-    case "NE":
+    case Dir_NE:
       rotate(radians(45)); // rotate 45 degrees
       image(img, 10, -25, 50, 50);
       break;
-    case "L":
+    case Dir_L:
       rotate(radians(90)); // rotate 45 degrees
       image(img, 0, -50, 50, 50);
       break;
-    case "SE":
+    case Dir_SE:
       rotate(radians(135)); // rotate 45 degrees
       image(img, -20, -60, 50, 50);
       break;
-    case "S":
+    case Dir_S:
       rotate(radians(180)); // rotate 45 degrees
       image(img, -50, -50, 50, 50);
       break;
-    case "SO":
+    case Dir_SO:
       rotate(radians(225)); // rotate 45 degrees
       image(img, -60, -20, 50, 50);
       break;
-    case "O":
+    case Dir_O:
       rotate(radians(270)); // rotate 45 degrees
       image(img, -50, 0, 50, 50);
       break;
-    case "NO":
+    case Dir_NO:
       rotate(radians(315)); // rotate 45 degrees
       image(img, -30, 10, 50, 50);
       break;
