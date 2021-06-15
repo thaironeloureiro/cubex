@@ -505,10 +505,10 @@ boolean frente(int step_motor) {
   x_afrente = x_obstaculo;
 
   //a depender da direção atual, estima a coordenada da posição a frente
-  if(direcao==Dir_N) y_afrente--;
-  else if(direcao==Dir_S) y_afrente++;
-  else if(direcao==Dir_O) x_afrente--;
-  else if(direcao==Dir_L) x_afrente++;
+  if (direcao == Dir_N) y_afrente--;
+  else if (direcao == Dir_S) y_afrente++;
+  else if (direcao == Dir_O) x_afrente--;
+  else if (direcao == Dir_L) x_afrente++;
 
   //a depender da direção atual, verificar se a posição a frente está no limite
   if (x_afrente >= 0 && y_afrente >= 0 && x_afrente < COL && y_afrente < ROW) {
@@ -548,7 +548,7 @@ boolean frente(int step_motor) {
     if (dist_obs == 0 or dist_obs_em_quadros > 1 ) {
       ret = true;
       if (DEBUG)  Serial.println("FRENTE");
-      
+
       servoLeft.write(servoLeft_frente);
       servoRight.write(servoRight_frente);
       delay(step_motor);
@@ -575,14 +575,14 @@ void esquerda(int step_motor) {
   if (DEBUG) Serial.println("ESQUERDA");
   servoSonar.write(180); delay(50);
 
-  if(step_motor==GIRO_90){
-    if(direcao==Dir_N) direcao=Dir_L;
-    else if(direcao==Dir_S) direcao=Dir_O;
-    else if(direcao==Dir_O) direcao=Dir_N;
-    else if(direcao==Dir_L) direcao=Dir_S;
+  if (step_motor == GIRO_90) {
+    if (direcao == Dir_N) direcao = Dir_L;
+    else if (direcao == Dir_S) direcao = Dir_O;
+    else if (direcao == Dir_O) direcao = Dir_N;
+    else if (direcao == Dir_L) direcao = Dir_S;
     Serial.print("[P][DIRECAO]"); Serial.println(direcao);
   }
-  
+
   servoLeft.write(servoLeft_re);
   servoRight.write(servoRight_frente);
   delay(step_motor);
@@ -593,14 +593,14 @@ void direita(int step_motor) {
   if (DEBUG) Serial.println("DIREITA");
   servoSonar.write(50);
   delay(50);
-  if(step_motor==GIRO_90){
-    if(direcao==Dir_N) direcao=Dir_L;
-    else if(direcao==Dir_S) direcao=Dir_O;
-    else if(direcao==Dir_O) direcao=Dir_N;
-    else if(direcao==Dir_L) direcao=Dir_S;
+  if (step_motor == GIRO_90) {
+    if (direcao == Dir_N) direcao = Dir_L;
+    else if (direcao == Dir_S) direcao = Dir_O;
+    else if (direcao == Dir_O) direcao = Dir_N;
+    else if (direcao == Dir_L) direcao = Dir_S;
     Serial.print("[P][DIRECAO]"); Serial.println(direcao);
   }
-  
+
   servoLeft.write(servoLeft_frente);
   servoRight.write(servoRight_re);
   delay(step_motor);
@@ -609,7 +609,7 @@ void direita(int step_motor) {
 
 void parar(int step_motor) {
   if (DEBUG) Serial.println("PARADA");
-  
+
   servoSonar.write(78); delay(50);
   servoLeft.write(servoLeft_parado);
   servoRight.write(servoRight_parado);
@@ -679,10 +679,10 @@ char getDestino() {
   //CAPTURA DISTANCIA 1
   //servoSonar.write(50);
   delay(50);
-  direcao=Dir_N;
+  direcao = Dir_N;
   corrigir_direcao(Dir_N); //direcao inicial Norte
   Serial.print("[P][DIRECAO]"); Serial.println(direcao);
-  
+
   delay(1000);
   d1 = getDistancia();
   x1 = getCol(posicao_atual);
@@ -718,7 +718,7 @@ char getDestino() {
         Serial.println(y2);
       }
       Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
-    }else{ //andou==false, significa que não pode ir para frente, nesse caso gira para a direita
+    } else { //andou==false, significa que não pode ir para frente, nesse caso gira para a direita
       direita(GIRO_90); //direcao a Leste
       corrigir_direcao(direcao); //ajustar direcao
     }
@@ -743,7 +743,7 @@ char getDestino() {
       x3++;
       posicao_atual = getIndice(x3, y3);
       Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
-    }else{ //andou==false, significa que não pode ir para frente, nesse caso gira para a direita
+    } else { //andou==false, significa que não pode ir para frente, nesse caso gira para a direita
       direita(GIRO_90); //direcao a Leste
       corrigir_direcao(direcao); //ajustar direcao
     }
@@ -847,7 +847,7 @@ float getSonar() {
 
 int getDirecao() {
   //int vet_direcao[8] = {"N", "NE", "L", "SE", "S", "SO", "O", "NO"};
-  
+
   int fixedHeadingDegrees; // Used to store Heading value
 
   Vector raw = bussola.readRaw();
