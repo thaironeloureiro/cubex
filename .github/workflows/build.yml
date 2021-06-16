@@ -39,8 +39,10 @@ jobs:
 
       - name: Build production
         run: |
-          build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh          
-          VERSION=$(sed -En 's/#define VERSION[ ]+["](.+)["]/\1/p' includes/parameters.h)
+          curl -L -O https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip -o build-wrapper-linux-x86.zip
+          build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh       
+#          build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh                    
     
   sonarcloud:
     name: SonarCloud
