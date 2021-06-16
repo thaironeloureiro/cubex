@@ -31,4 +31,4 @@ cache:
 script:
     - |              
         build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
-        sonar-scanner -Dproject.settings=sonar-project.properties -Dsonar.cfamily.cache.path=$HOME/.sonar/cache  
+        sonar-scanner -X -Dproject.settings=sonar-project.properties -Dsonar.cfamily.cache.path=$HOME/.sonar/cache  
