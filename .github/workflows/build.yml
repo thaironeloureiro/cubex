@@ -33,7 +33,7 @@ jobs:
 
       - name: Build production
         run: |
-          arduino-cli compile --fqbn arduino:avr:mega --verbose sniffer_cube/sniffer_cube          
+          build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh          
           VERSION=$(sed -En 's/#define VERSION[ ]+["](.+)["]/\1/p' includes/parameters.h)
     
   sonarcloud:
