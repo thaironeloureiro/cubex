@@ -32,6 +32,7 @@ echo "ls sonarcloud/bo"
 #cat sonarcloud/bo/build-wrapper.log
 echo "--------"
 python convert-compile-commands.py $PWD/build/compile_commands.json
+ls cfamily-compilation-database
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
 #cat /home/runner/work/cubex/cubex/cfamily-compilation-database/build-wrapper-dump.json
