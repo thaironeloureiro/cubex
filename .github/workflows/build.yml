@@ -21,6 +21,7 @@ jobs:
           arduino-cli config init --additional-urls https://downloads.arduino.cc/packages/package_staging_index.json
           arduino-cli config dump
           arduino-cli core update-index
+          arduino-cli core install arduino:avr
           arduino-cli core install arduino:megaavr
           arduino-cli lib install Servo
           mkdir -p $HOME/Arduino/libraries
