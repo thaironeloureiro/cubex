@@ -1,4 +1,8 @@
 #!/bin/bash
+echo "#########################"
+echo "ls sonarcloud/bo"
+ls sonarcloud/bo
+echo "#########################"
 wget http://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
 tar xf arduino-cli_latest_Linux_64bit.tar.gz
 mkdir -p $HOME/bin
