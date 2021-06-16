@@ -24,7 +24,6 @@ jobs:
           arduino-cli core install arduino:megaavr
           arduino-cli lib install Servo
           mkdir -p $HOME/Arduino/libraries
-          ln -s $PWD $HOME/Arduino/libraries/.
           
       - name: Get the version
         id: version
