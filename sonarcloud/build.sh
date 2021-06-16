@@ -1,5 +1,6 @@
 #!/bin/bash
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+ls $HOME/bin/arduino-cli
 echo "build.sh"
 #wget http://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
 #tar xf arduino-cli_latest_Linux_64bit.tar.gz
