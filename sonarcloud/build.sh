@@ -22,7 +22,7 @@ arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sni
 echo "#########################"
 echo "ls sonarcloud/bo"
 ls sonarcloud/bo
-cat build-wrapper-dump.json
+cat sonarcloud/bo/build-wrapper-dump.json
 echo "--------"
-cat build-wrapper.log
+cat sonarcloud/bo/build-wrapper.log
 echo "#########################"
