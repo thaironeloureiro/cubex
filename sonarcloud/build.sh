@@ -2,6 +2,9 @@
 echo "#########################"
 echo "ls sonarcloud/bo"
 ls sonarcloud/bo
+cat build-wrapper-dump.json
+echo "--------"
+cat build-wrapper.log
 echo "#########################"
 wget http://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
 tar xf arduino-cli_latest_Linux_64bit.tar.gz
