@@ -34,5 +34,5 @@ echo "--------"
 python convert-compile-commands.py $PWD/build/compile_commands.json
 #cat cfamily-compilation-database/build-wrapper-dump.json
 echo "ls $PWD/cfamily-compilation-database"
-cat /github/workspace/cfamily-compilation-database/build-wrapper-dump.json
+cat /home/runner/work/cubex/cubex/cfamily-compilation-database/build-wrapper-dump.json
 echo "#########################"
