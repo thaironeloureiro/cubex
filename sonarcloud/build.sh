@@ -7,7 +7,7 @@ echo "build.sh"
 #tar xf arduino-cli_latest_Linux_64bit.tar.gz
 #mkdir -p $HOME/bin
 #mv arduino-cli $HOME/bin/arduino-cli
-#export PATH=$PATH:$HOME/bin
+export PATH=$PATH:$HOME/bin
 #arduino-cli config add board_manager.additional-urls https://downloads.arduino.cc/packages/package_staging_index.json
 #arduino-cli config set library.enable_unsafe_install true
 #arduino-cli config dump
