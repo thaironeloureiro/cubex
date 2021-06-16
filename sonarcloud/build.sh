@@ -1,11 +1,4 @@
 #!/bin/bash
-echo "#########################"
-echo "ls sonarcloud/bo"
-ls sonarcloud/bo
-cat build-wrapper-dump.json
-echo "--------"
-cat build-wrapper.log
-echo "#########################"
 wget http://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
 tar xf arduino-cli_latest_Linux_64bit.tar.gz
 mkdir -p $HOME/bin
@@ -26,3 +19,10 @@ mkdir -p $HOME/Arduino/libraries
 ln -s $PWD $HOME/Arduino/libraries/.
 arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
 #arduino-cli compile --build-path $PWD/build --fqbn arduino:avr:mega --verbose sniffer_cube/sniffer_cube -e src/software/firmware/output/sniffer_cube
+echo "#########################"
+echo "ls sonarcloud/bo"
+ls sonarcloud/bo
+cat build-wrapper-dump.json
+echo "--------"
+cat build-wrapper.log
+echo "#########################"
