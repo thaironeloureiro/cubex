@@ -23,6 +23,8 @@ echo "#########################"
 echo "ls $PWD/build"
 ls $PWD/build
 echo "----"
+cat $PWD/build/compile_commands.json
+echo "----"
 echo "ls sonarcloud/bo"
 ls sonarcloud/bo
 cat sonarcloud/bo/build-wrapper-dump.json
