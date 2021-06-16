@@ -16,13 +16,12 @@ before_install:
 install:
   - mkdir -p $HOME/Arduino/libraries
   - ln -s $PWD $HOME/Arduino/libraries/.
-  - travis encrypt 9facd779f3c71f91ae7e870487ae91a200642fd5
 
 addons:
   sonarcloud:
     organization: "thaironeloureiro"
     token:
-      secure: "travis encrypt 9facd779f3c71f91ae7e870487ae91a200642fd5" # encrypted value of your token
+      secure: "Q7WRCGEhPKEV/H4PvSwjroIfnXffLm6n09TbzpCWQ31r3PUL1irlSYNJ6fT4c3nV2SDStF5a/U3Y/gIA2vahTb2ijVGul2MhVYeLrF5tmFUTFwgXgEJao2vK6s/3ppvxMU9vi7sTBF52hrHOyvVneC2FaRxISSjI2t6QXiIeDLIupHnecZhlfcMyKO52apDLtD6woFqjCy7mKA4AEJhL0pfqejmsjD7eKUY5iGDUVHjfT52Gcn9xap57XhRZ7UGsQxgcBWqDTjZw7Qlbr1cGnH0z4MX7dL4sK+jSzeZUKZAx44flNxXZ75IKdfX/Z9fo+XvekOEPz5CSXfcgtlz0osnydsQI3gMvIbjHBB43pUjxTMEY9OJJ55Fbn1jwXKJOZawQI/Az5bEPwVr+R5sI356VI6/0s++8UyQceTu3tXfMhrBwB/oCt8iwLzI4+kRR5LkHHtZMi2JC+6JHg1iUk7xkHlB3iKAkIprxwt5Z3EjDsdoVHrCmU8CxdQNcZP18R8H0PsUq9YCvazitcphULM98cpMdM7rTqrvcBbqsyhn3feYduvGkpODTW6pTucAeRTa6u4/T6+ER5hXiLlsYqvkUDeb7am1uEODzkb7zySiyPGNE8qQPH3s+7jESql63YfQvM4BL++PiVJiS6+We5sNcLtwTtJRzkxxaaSvUXp0="
 
 # Cache PlatformIO packages using Travis CI container-based infrastructure
 sudo: false
