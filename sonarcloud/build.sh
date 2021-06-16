@@ -10,6 +10,7 @@ arduino-cli config dump
 arduino-cli core update-index
 arduino-cli core install arduino:megaavr
 arduino-cli lib install Servo
+arduino-cli lib install --zip-path ../HMC5883L.zip
 mkdir -p $HOME/Arduino/libraries
 ln -s $PWD $HOME/Arduino/libraries/.
 arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
