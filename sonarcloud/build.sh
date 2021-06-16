@@ -29,12 +29,12 @@ echo "----"
 echo "----"
 echo "ls sonarcloud/bo"
 ls -l sonarcloud/bo
-#cat sonarcloud/bo/build-wrapper-dump.json
+cat sonarcloud/bo/build-wrapper-dump.json
 #echo "--------"
 #cat sonarcloud/bo/build-wrapper.log
 echo "-------- usando convert-compile-commands.py ------"
-python convert-compile-commands.py $PWD/build/compile_commands.json
-ls cfamily-compilation-database
+#python convert-compile-commands.py $PWD/build/compile_commands.json
+#ls cfamily-compilation-database
 echo "--------------------------------------------------"
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
