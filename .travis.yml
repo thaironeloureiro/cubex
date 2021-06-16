@@ -1,28 +1,34 @@
-sudo: false
+language: generic
+before_install:
+  - wget http://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
+  - tar xf arduino-cli_latest_Linux_64bit.tar.gz
+  - mkdir -p $HOME/bin
+  - mv arduino-cli $HOME/bin/arduino-cli
+  - export PATH=$PATH:$HOME/bin
+  - arduino-cli core update-index
+  - arduino-cli config init --additional-urls https://downloads.arduino.cc/packages/package_staging_index.json
+  - arduino-cli config dump
+  - arduino-cli core update-index
+  - arduino-cli core install arduino:megaavr
+  - arduino-cli lib install Servo
+#  - sed -i '/recipe.output.tmp_file={build.project_name}.hex/d' "$HOME/.arduino15/packages/STM32/hardware/stm32/1.8.0/platform.txt"
+#  - sed -i '/recipe.output.save_file={build.project_name}.{build.variant}.hex/d' "$HOME/.arduino15/packages/STM32/hardware/stm32/1.8.0/platform.txt"
+install:
+  - mkdir -p $HOME/Arduino/libraries
+  - ln -s $PWD $HOME/Arduino/libraries/.
 
 addons:
   sonarcloud:
     organization: "thaironeloureiro"
     token:
-      secure: "0b55a70841d023b3917dcbbd75a85badb487ec07"
+      secure: "Q7WRCGEhPKEV/H4PvSwjroIfnXffLm6n09TbzpCWQ31r3PUL1irlSYNJ6fT4c3nV2SDStF5a/U3Y/gIA2vahTb2ijVGul2MhVYeLrF5tmFUTFwgXgEJao2vK6s/3ppvxMU9vi7sTBF52hrHOyvVneC2FaRxISSjI2t6QXiIeDLIupHnecZhlfcMyKO52apDLtD6woFqjCy7mKA4AEJhL0pfqejmsjD7eKUY5iGDUVHjfT52Gcn9xap57XhRZ7UGsQxgcBWqDTjZw7Qlbr1cGnH0z4MX7dL4sK+jSzeZUKZAx44flNxXZ75IKdfX/Z9fo+XvekOEPz5CSXfcgtlz0osnydsQI3gMvIbjHBB43pUjxTMEY9OJJ55Fbn1jwXKJOZawQI/Az5bEPwVr+R5sI356VI6/0s++8UyQceTu3tXfMhrBwB/oCt8iwLzI4+kRR5LkHHtZMi2JC+6JHg1iUk7xkHlB3iKAkIprxwt5Z3EjDsdoVHrCmU8CxdQNcZP18R8H0PsUq9YCvazitcphULM98cpMdM7rTqrvcBbqsyhn3feYduvGkpODTW6pTucAeRTa6u4/T6+ER5hXiLlsYqvkUDeb7am1uEODzkb7zySiyPGNE8qQPH3s+7jESql63YfQvM4BL++PiVJiS6+We5sNcLtwTtJRzkxxaaSvUXp0="
 
-script:
-  # Prepare the build system
-  - mkdir build
-  - cd build
-  - cmake ..
-  - cd ..
-  - NUMBER_OF_PROCESSORS=$(nproc --all)
-  # Wraps the compilation with the Build Wrapper to generate configuration (used
-  # later by the SonarQube Scanner) into the "bw-output" folder
-  - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/
-  # And finally run the SonarQube analysis - read the "sonar-project.properties"
-  # file to see the specific configuration
-  - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
-
+# Cache PlatformIO packages using Travis CI container-based infrastructure
+sudo: false
 cache:
-  directories:
-    - $HOME/.sonar/cache
-    # This contains the CFamily cache. According to https://docs.travis-ci.com/user/caching/#pull-request-builds-and-caches,
-    # for a PR, it will use the cache of the target branch if the branch of the PR does not already have its cache.
-    - $HOME/.cfamily
+    directories:
+        - '$HOME/.sonar/cache'
+script:
+    - |      
+        build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
+        sonar-scanner -Dproject.settings=sonar-project.properties -Dsonar.cfamily.cache.path=$HOME/.sonar/cache  
