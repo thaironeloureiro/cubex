@@ -1,0 +1,50 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v1.1.1
+        with:
+          version: 0.10.0
+          
+      - name: Install ArduinoMega libs
+        run: |                    
+          arduino-cli config init --additional-urls https://downloads.arduino.cc/packages/package_staging_index.json
+          arduino-cli config dump
+          arduino-cli core install arduino:megaavr  
+      - name: Get the version
+        id: version
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          echo ::set-output name=version::${GITHUB_REF/refs\/tags\//}   
+  
+      - name: Set VERSION variable
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && steps.version.outputs.version != ''
+        run: |
+          *sed -Ei "s/#define VERSION \".+\"/#define VERSION \"${{ steps.version.outputs.version }}\"/" includes/parameters.h          
+
+      - name: Build production
+        run: |
+          arduino-cli compile --fqbn arduino:avr:mega --verbose sniffer_cube/sniffer_cube          
+          VERSION=$(sed -En 's/#define VERSION[ ]+["](.+)["]/\1/p' includes/parameters.h)
+    
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
