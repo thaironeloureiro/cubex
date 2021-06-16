@@ -494,11 +494,10 @@ boolean frente(int step_motor) {
   boolean tem_bloco_a_frente = false;
   int x_obstaculo, y_obstaculo, ind_obstaculo, dist_obs_em_quadros, x_afrente, y_afrente;
 
-  //deve checar obstaculo.
-  //se houver deve marcar no grid o quadro a frente como sendo ocupado
+  
   servoSonar.write(78); delay(50);
 
-
+  //camputara coordenadas da posição atual
   y_obstaculo = getRow(posicao_atual);
   x_obstaculo = getCol(posicao_atual);
   y_afrente = y_obstaculo;
