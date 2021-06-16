@@ -24,5 +24,5 @@ echo "ls sonarcloud/bo"
 ls sonarcloud/bo
 cat sonarcloud/bo/build-wrapper-dump.json
 echo "--------"
-#cat sonarcloud/bo/build-wrapper.log
+cat sonarcloud/bo/build-wrapper.log
 echo "#########################"
