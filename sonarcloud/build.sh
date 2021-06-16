@@ -23,11 +23,13 @@ echo "#########################"
 echo "ls $PWD/build"
 ls $PWD/build
 echo "----"
-cat $PWD/build/compile_commands.json
+#cat $PWD/build/compile_commands.json
 echo "----"
 echo "ls sonarcloud/bo"
 ls sonarcloud/bo
-cat sonarcloud/bo/build-wrapper-dump.json
+#cat sonarcloud/bo/build-wrapper-dump.json
+#echo "--------"
+#cat sonarcloud/bo/build-wrapper.log
 echo "--------"
-cat sonarcloud/bo/build-wrapper.log
+python convert-compile-commands.py $PWD/build/compile_commands.json
 echo "#########################"
