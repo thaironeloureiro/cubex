@@ -15,7 +15,7 @@ before_install:
 #  - sed -i '/recipe.output.save_file={build.project_name}.{build.variant}.hex/d' "$HOME/.arduino15/packages/STM32/hardware/stm32/1.8.0/platform.txt"
 install:
   - mkdir -p $HOME/Arduino/libraries
-  - ln -s $PWD $HOME/Arduino/libraries/.
+  - ln -s $PWD $HOME/Arduino/libraries/.  
 
 addons:
   sonarcloud:
@@ -29,7 +29,9 @@ cache:
     directories:
         - '$HOME/.sonar/cache'
 script:
-    - |      
+    - |              
+        echo "#########################"
+        echo "ls sonarcloud/bo"
         ls sonarcloud/bo
         build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
         sonar-scanner -Dproject.settings=sonar-project.properties -Dsonar.cfamily.cache.path=$HOME/.sonar/cache  
