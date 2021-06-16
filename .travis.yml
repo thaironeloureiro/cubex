@@ -16,12 +16,13 @@ before_install:
 install:
   - mkdir -p $HOME/Arduino/libraries
   - ln -s $PWD $HOME/Arduino/libraries/.
+  - travis encrypt 9facd779f3c71f91ae7e870487ae91a200642fd5
 
 addons:
   sonarcloud:
     organization: "thaironeloureiro"
     token:
-      secure: "0b55a70841d023b3917dcbbd75a85badb487ec07" # encrypted value of your token
+      secure: "travis encrypt 9facd779f3c71f91ae7e870487ae91a200642fd5" # encrypted value of your token
 
 # Cache PlatformIO packages using Travis CI container-based infrastructure
 sudo: false
