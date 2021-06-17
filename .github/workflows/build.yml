@@ -56,17 +56,5 @@ jobs:
           cat /home/runner/work/_temp/32fe9229-e5bd-4c55-92b9-9f9c148962b2.sh
           echo "------"
           echo "-> sonar-scanner ..."
-          sonar-scanner -Dproject.settings=sonar-project.properties  
+          sonar-scanner -Dproject.settings=sonar-project.properties
           
-#  sonarcloud:
-#    name: SonarCloud
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-#      - name: SonarCloud Scan
-#        uses: SonarSource/sonarcloud-github-action@master
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
