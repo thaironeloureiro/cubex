@@ -48,10 +48,12 @@ jobs:
 
       - name: Sonar
         run: |
+          echo ">>>>>> unzip sonar
           unzip -o sonar-scanner-4.6.1.2450-linux.zip
           $install_directory=sonar
           export PATH=$PATH:$install_directory/bin
-          sonar-scanner -Dproject.settings=sonar-project.properties  -X
+          echo "-> sonar-scanner ..."
+          sonar-scanner -Dproject.settings=sonar-project.properties  
           
   sonarcloud:
     name: SonarCloud
