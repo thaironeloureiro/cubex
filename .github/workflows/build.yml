@@ -44,6 +44,9 @@ jobs:
           curl -L -O https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -o build-wrapper-linux-x86.zip
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
+          echo "############# cfamily-compilation-database/build-wrapper-dump.json ##########"
+          cat cfamily-compilation-database/build-wrapper-dump.json
+          echo "####################################################"
 
 #      - name: Qualidade_Codigo
 #        env:
