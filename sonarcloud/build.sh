@@ -33,10 +33,10 @@ arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffe
 #echo "--------"
 #cat sonarcloud/bo/build-wrapper.log
 
-#echo "-------- usando convert-compile-commands.py ------"
+echo "-------- usando convert-compile-commands.py ------"
 python convert-compile-commands.py $PWD/build/compile_commands.json
 #ls -l cfamily-compilation-database
-#echo "--------------------------------------------------"
+echo "--------------------------------------------------"
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
 #echo "#########################"
