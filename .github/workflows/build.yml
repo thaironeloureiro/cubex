@@ -46,6 +46,9 @@ jobs:
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
 
       - name: Qualidade_Codigo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           echo ">>>>>> bash sonarcloud/build.sh"
           bash sonarcloud/sonar.sh
