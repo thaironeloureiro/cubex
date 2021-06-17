@@ -34,6 +34,10 @@ ls -l sonarcloud/bo
 #cat sonarcloud/bo/build-wrapper-dump.json
 echo "--------"
 #cat sonarcloud/bo/build-wrapper.log
+echo ">>>> cat $PWD/build/build.options.json"
+cat $PWD/build/build.options.json
+echo ">>>> cat $PWD/build/compile_commands.json"
+cat $PWD/build/compile_commands.json
 
 #echo "-------- usando convert-compile-commands.py ------"
 #python convert-compile-commands.py $PWD/build/compile_commands.json
