@@ -21,10 +21,10 @@ export PATH=$PATH:$HOME/bin
 
 #arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
 arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube/sniffer_cube --output-dir $PWD/output
-#echo "#########################"
-#echo "ls $PWD/build"
-#ls $PWD/build
-#echo "----"
+echo "#########################"
+echo "ls $PWD/build"
+ls -l $PWD/build
+echo "---- cat $PWD/build/compile_commands.json "
 #cat $PWD/build/compile_commands.json
 #echo "----"
 #echo "ls sonarcloud/bo"
