@@ -43,15 +43,11 @@ jobs:
         run: |
           curl -L -O https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -o build-wrapper-linux-x86.zip
-          build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh       
+          build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
 #          build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh                    
 
       - name: Sonar
         run: |
-          echo ">>>>>> unzip sonar
-          unzip -o sonar-scanner-cli-4.6.2.2472-linux
-          $install_directory=sonar-scanner-cli-4.6.2.2472-linux
-          export PATH=$PATH:$install_directory/bin
-          echo "------> sonar-scanner ..."
-          sonar-scanner -Dproject.settings=sonar-project.properties
+          echo ">>>>>> bash sonarcloud/build.sh
+          bash sonarcloud/sonar.sh
       
