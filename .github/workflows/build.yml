@@ -47,6 +47,6 @@ jobs:
 
       - name: Qualidade_Codigo
         run: |
-          echo ">>>>>> bash sonarcloud/build.sh
-#          bash sonarcloud/sonar.sh
+          echo ">>>>>> bash sonarcloud/build.sh"
+          bash sonarcloud/sonar.sh
       
