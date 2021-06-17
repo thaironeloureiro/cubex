@@ -37,10 +37,10 @@ echo "--------"
 #echo ">>>> cat $PWD/build/compile_commands.json"
 #cat $PWD/build/compile_commands.json
 
-#echo "-------- usando convert-compile-commands.py ------"
-#python convert-compile-commands.py $PWD/build/compile_commands.json
-#ls -l cfamily-compilation-database
-#echo "--------------------------------------------------"
+echo "-------- usando convert-compile-commands.py ------"
+python convert-compile-commands.py $PWD/build/compile_commands.json
+ls -l cfamily-compilation-database
+echo "--------------------------------------------------"
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
 #echo "#########################"
