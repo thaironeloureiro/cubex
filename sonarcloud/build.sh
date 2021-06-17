@@ -1,8 +1,8 @@
 #!/bin/bash
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-ls $HOME/bin/arduino-cli
-ls -l $HOME/bin
-echo "build.sh"
+#echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
+#ls $HOME/bin/arduino-cli
+#ls -l $HOME/bin
+#echo "build.sh"
 #wget http://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
 #tar xf arduino-cli_latest_Linux_64bit.tar.gz
 #mkdir -p $HOME/bin
@@ -18,13 +18,13 @@ export PATH=$PATH:$HOME/bin
 #arduino-cli lib install --zip-path NewPing.zip
 #mkdir -p $HOME/Arduino/libraries
 #ln -s $PWD $HOME/Arduino/libraries/.
-pwd
-arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
-#arduino-cli compile --build-path $PWD/build --fqbn arduino:avr:mega --verbose sniffer_cube/sniffer_cube -e src/software/firmware/output/sniffer_cube
-echo "#########################"
-echo "ls $PWD/build"
-ls $PWD/build
-echo "----"
+
+#arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
+arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube/sniffer_cube --output $PWD/output
+#echo "#########################"
+#echo "ls $PWD/build"
+#ls $PWD/build
+#echo "----"
 #cat $PWD/build/compile_commands.json
 #echo "----"
 #echo "ls sonarcloud/bo"
@@ -32,10 +32,11 @@ echo "----"
 #cat sonarcloud/bo/build-wrapper-dump.json
 #echo "--------"
 #cat sonarcloud/bo/build-wrapper.log
-echo "-------- usando convert-compile-commands.py ------"
+
+#echo "-------- usando convert-compile-commands.py ------"
 python convert-compile-commands.py $PWD/build/compile_commands.json
-ls -l cfamily-compilation-database
-echo "--------------------------------------------------"
+#ls -l cfamily-compilation-database
+#echo "--------------------------------------------------"
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
-echo "#########################"
+#echo "#########################"
