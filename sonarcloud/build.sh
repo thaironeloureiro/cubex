@@ -21,16 +21,18 @@ export PATH=$PATH:$HOME/bin
 
 #arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
 arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube/sniffer_cube --output-dir $PWD/output
-#echo "#########################"
-#echo "ls $PWD/build"
-#ls -l $PWD/build
+echo "#########################"
+echo "ls -l $PWD/build"
+ls -l $PWD/build
+echo "ls -l $PWD/oupu"
+ls -l $PWD/output
 #echo "---- cat $PWD/build/compile_commands.json "
 #cat $PWD/build/compile_commands.json
 #echo "----"
-#echo "ls sonarcloud/bo"
-#ls -l sonarcloud/bo
+echo "ls sonarcloud/bo"
+ls -l sonarcloud/bo
 #cat sonarcloud/bo/build-wrapper-dump.json
-#echo "--------"
+echo "--------"
 #cat sonarcloud/bo/build-wrapper.log
 
 #echo "-------- usando convert-compile-commands.py ------"
