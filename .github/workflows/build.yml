@@ -45,10 +45,7 @@ jobs:
           unzip -o build-wrapper-linux-x86.zip
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
           echo "############ cfamily-compilation-database build-wrapper-dump.json ##########"
-          
-          echo "ls -l cfamily-compilation-database/build-wrapper-dump.json"
-          ls -l cfamily-compilation-database/build-wrapper-dump.json
-          
+                    
           echo "ls -l sonarcloud/bo"
           ls -l sonarcloud/bo
           
