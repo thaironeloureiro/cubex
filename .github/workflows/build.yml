@@ -48,7 +48,7 @@ jobs:
                     
           echo "ls -l sonarcloud/bo"
           ls -l sonarcloud/bo
-          
+          cat sonarcloud/bo/build-wrapper-dump.json
           echo "####################################################"        
 
       - name: Qualidade_Codigo
