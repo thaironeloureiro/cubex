@@ -44,9 +44,8 @@ jobs:
           curl -L -O https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -o build-wrapper-linux-x86.zip
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
-#          build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh                    
 
-      - name: Sonar
+      - name: Scanner
         run: |
           sonarsource/sonar-scanner-cli
           echo ">>>>>> bash sonarcloud/build.sh
