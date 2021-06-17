@@ -52,6 +52,9 @@ jobs:
           unzip -o sonar-scanner-4.6.1.2450-linux.zip
           $install_directory=sonar
           export PATH=$PATH:$install_directory/bin
+          echo "------"
+          cat /home/runner/work/_temp/32fe9229-e5bd-4c55-92b9-9f9c148962b2.sh
+          echo "------"
           echo "-> sonar-scanner ..."
           sonar-scanner -Dproject.settings=sonar-project.properties  
           
