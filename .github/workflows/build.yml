@@ -48,6 +48,7 @@ jobs:
 
       - name: Sonar
         run: |
+          sonarsource/sonar-scanner-cli
           echo ">>>>>> bash sonarcloud/build.sh
           bash sonarcloud/sonar.sh
       
