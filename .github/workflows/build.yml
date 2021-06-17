@@ -45,7 +45,14 @@ jobs:
           unzip -o build-wrapper-linux-x86.zip
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh       
 #          build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh                    
-    
+
+      - name: Sonar
+        run: |
+          unzip -o sonar-scanner-4.6.1.2450-linux.zip
+          $install_directory=sonar
+          export PATH=$PATH:$install_directory/bin
+          sonar-scanner -Dproject.settings=sonar-project.properties  -X
+          
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
