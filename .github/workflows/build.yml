@@ -43,7 +43,15 @@ jobs:
         run: |
           curl -L -O https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -o build-wrapper-linux-x86.zip
-          build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir sonarcloud/bo bash sonarcloud/build.sh
+          echo "build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh"
+          build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh
+          echo "-------- usando convert-compile-commands.py ------"
+          echo "$PWD/build"
+          echo "python convert-compile-commands.py $PWD/build/compile_commands.json"
+          python convert-compile-commands.py $PWD/build/compile_commands.json
+          ls -l cfamily-compilation-database
+          cp cfamily-compilation-database/build-wrapper-dump.json sonarcloud/bo/build-wrapper-dump.json
+          echo "--------------------------------------------------"
 
       - name: Qualidade_Codigo
         env:
