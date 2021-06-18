@@ -37,7 +37,7 @@ for entry in db:
   captures.append(capture)
 
 bw = OrderedDict()
-bw['version'] = 0
+bw['version'] = '1.0.1'
 bw['captures'] = captures
 
 os.mkdir('cfamily-compilation-database')
