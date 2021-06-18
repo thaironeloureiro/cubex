@@ -40,6 +40,8 @@ echo "--------"
 echo "-------- usando convert-compile-commands.py ------"
 python convert-compile-commands.py $PWD/build/compile_commands.json
 ls -l cfamily-compilation-database
+rm sonarcloud/bo/build-wrapper-dump.json
+cp cfamily-compilation-database/build-wrapper-dump.json sonarcloud/bo/build-wrapper-dump.json
 echo "--------------------------------------------------"
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
