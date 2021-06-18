@@ -20,6 +20,7 @@ export PATH=$PATH:$HOME/bin
 #ln -s $PWD $HOME/Arduino/libraries/.
 
 #arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
+arduino-cli cache clean
 arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube/sniffer_cube --output-dir $PWD/output
 echo "#########################"
 echo "ls -l $PWD/build"
