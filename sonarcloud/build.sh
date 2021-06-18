@@ -25,7 +25,6 @@ arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffe
 echo "#########################"
 echo "ls -l $PWD/build"
 ls -l $PWD/build
-cat $PWD/build/build-wrapper-dump.json
 #echo "ls -l $PWD/oupu"
 #ls -l $PWD/output
 #echo "---- cat $PWD/build/compile_commands.json "
@@ -33,7 +32,7 @@ cat $PWD/build/build-wrapper-dump.json
 #echo "----"
 echo "ls sonarcloud/bo"
 ls -l sonarcloud/bo
-#cat sonarcloud/bo/build-wrapper-dump.json
+cat sonarcloud/bo/build-wrapper-dump.json
 echo "--------"
 #cat sonarcloud/bo/build-wrapper.log
 #echo ">>>> cat $PWD/build/compile_commands.json"
