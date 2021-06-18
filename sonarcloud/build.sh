@@ -45,7 +45,7 @@ rm sonarcloud/bo/build-wrapper-dump.json
 cp cfamily-compilation-database/build-wrapper-dump.json sonarcloud/bo/build-wrapper-dump.json
 echo "--------------------------------------------------"
 echo "du $HOME"
-ls $HOME
+ls $HOME/work/cubex
 #/home/runner/work/cubex/cubex
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
