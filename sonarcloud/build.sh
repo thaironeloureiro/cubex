@@ -39,10 +39,10 @@ ls -l $PWD/output
 #cat $PWD/build/compile_commands.json
 
 
-echo "ls -l $HOME/work/cubex/cubex"
-ls -l $HOME/work/cubex/cubex
-echo "du $HOME/work/cubex"
-du $HOME/work/cubex
+#echo "ls -l $HOME/work/cubex/cubex"
+#ls -l $HOME/work/cubex/cubex
+#echo "du $HOME/work/cubex"
+#du $HOME/work/cubex
 #/home/runner/work/cubex/cubex
 #cat cfamily-compilation-database/build-wrapper-dump.json
 #echo "ls $PWD/cfamily-compilation-database"
