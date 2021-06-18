@@ -27,8 +27,8 @@ echo "ls -l $PWD/build"
 ls -l $PWD/build
 echo "ls -l $PWD/ouput"
 ls -l $PWD/output
-#echo "---- cat $PWD/build/compile_commands.json "
-#cat $PWD/build/compile_commands.json
+echo "---- cat $PWD/build/compile_commands.json "
+cat $PWD/build/compile_commands.json
 #echo "----"
 #echo "ls sonarcloud/bo"
 #ls -l sonarcloud/bo
