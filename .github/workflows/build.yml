@@ -46,6 +46,9 @@ jobs:
           echo "build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh"
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh
           
+          echo "ls -l $PWD/build/sketch"
+          ls -l $PWD/build/sketch
+          
           echo "cat $PWD/build/build-wrapper-dump.json"
           cat $PWD/build/build-wrapper-dump.json
           echo "rm $PWD/build/build-wrapper-dump.json"
