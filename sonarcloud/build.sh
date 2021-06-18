@@ -22,7 +22,7 @@ export PATH=$PATH:$HOME/bin
 #arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
 arduino-cli cache clean
 arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube/sniffer_cube --output-dir $PWD/output
-echo "#########################"
+echo "######################### ls"
 echo "ls -l $PWD/build"
 ls -l $PWD/build
 echo "ls -l $PWD/ouput"
@@ -30,20 +30,15 @@ ls -l $PWD/output
 #echo "---- cat $PWD/build/compile_commands.json "
 #cat $PWD/build/compile_commands.json
 #echo "----"
-echo "ls sonarcloud/bo"
-ls -l sonarcloud/bo
-cat sonarcloud/bo/build-wrapper-dump.json
-echo "--------"
+#echo "ls sonarcloud/bo"
+#ls -l sonarcloud/bo
+#cat sonarcloud/bo/build-wrapper-dump.json
+#echo "--------"
 #cat sonarcloud/bo/build-wrapper.log
 #echo ">>>> cat $PWD/build/compile_commands.json"
 #cat $PWD/build/compile_commands.json
 
-echo "-------- usando convert-compile-commands.py ------"
-python convert-compile-commands.py $PWD/build/compile_commands.json
-ls -l cfamily-compilation-database
-rm sonarcloud/bo/build-wrapper-dump.json
-cp cfamily-compilation-database/build-wrapper-dump.json sonarcloud/bo/build-wrapper-dump.json
-echo "--------------------------------------------------"
+
 echo "ls -l $HOME/work/cubex/cubex"
 ls -l $HOME/work/cubex/cubex
 echo "du $HOME/work/cubex"
