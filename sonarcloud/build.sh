@@ -25,8 +25,8 @@ arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffe
 echo "#########################"
 echo "ls -l $PWD/build"
 ls -l $PWD/build
-#echo "ls -l $PWD/oupu"
-#ls -l $PWD/output
+echo "ls -l $PWD/ouput"
+ls -l $PWD/output
 #echo "---- cat $PWD/build/compile_commands.json "
 #cat $PWD/build/compile_commands.json
 #echo "----"
