@@ -57,6 +57,9 @@ jobs:
           python convert-compile-commands.py $PWD/build/compile_commands.json
           ls -l cfamily-compilation-database
           cp cfamily-compilation-database/build-wrapper-dump.json $PWD/build/build-wrapper-dump.json
+          
+          echo "cat $PWD/build/build-wrapper-dump.json"
+          cat $PWD/build/build-wrapper-dump.json
           echo "--------------------------------------------------"
 
       - name: Qualidade_Codigo
