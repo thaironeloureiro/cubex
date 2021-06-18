@@ -21,7 +21,7 @@ export PATH=$PATH:$HOME/bin
 
 #arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
 arduino-cli cache clean
-arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube/sniffer_cube --output-dir $PWD/output --clean
+arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube --output-dir $PWD/output --clean
 echo "######################### ls"
 echo "ls -l $PWD/build"
 ls -l $PWD/build
