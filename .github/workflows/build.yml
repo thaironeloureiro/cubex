@@ -1,4 +1,4 @@
-name: Build
+name: Build wrapper & sonar-scanner - SonarCloud
 on:
   push:
     branches:
@@ -42,7 +42,7 @@ jobs:
         run: |
           *sed -Ei "s/#define VERSION \".+\"/#define VERSION \"${{ steps.version.outputs.version }}\"/" includes/parameters.h          
 
-      - name: Build wrapper
+      - name: Build wrapper & sonar-scanner
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -62,8 +62,9 @@ jobs:
           cp cfamily-compilation-database/build-wrapper-dump.json build/
           echo "--------------------------------------------------"
           
-          echo ">>>>>> bash sonarcloud/build.sh"
-          bash sonarcloud/sonar.sh
+          
+          sonar-scanner   -Dsonar.organization=thaironeloureiro   -Dsonar.projectKey=thaironeloureiro_cubex   -Dsonar.sources=.   -Dsonar.cfamily.build-wrapper-output=bw-output   -Dsonar.host.url=https://sonarcloud.io
+
           
       
   
