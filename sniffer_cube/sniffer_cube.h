@@ -17,19 +17,19 @@ const int GIRO_90=1000;
 #define RSSI_PIN 11
 #define TRIGGER_PIN  1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     0  // Arduino pin tied to echo pin on the ultrasonic sensor.
-#define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+const int MAX_DISTANCE=200; // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 #define DEBUG 0
 #define rssi_EMULADO 1
 #define bussola_EMULADA 1
 
-#define servoLeft_parado 82
-#define servoLeft_re 79
-#define servoLeft_frente 89
+const int servoLeft_parado=82;
+const int servoLeft_re=79;
+const int servoLeft_frente=89;
 
-#define servoRight_parado 80
-#define servoRight_re 86
-#define servoRight_frente 76
+const int servoRight_parado=80;
+const int servoRight_re=86;
+const int servoRight_frente=76;
 #define macAlvo  "FC58FAB45824"
 
 const int HM10_timeout=800;  // Wait 800ms each time for BLE to response, depending on your application, adjust this value accordingly
