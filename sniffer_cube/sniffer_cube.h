@@ -6,13 +6,13 @@
   como caba nó me dá 8bits, para cada linha, tenho 18 colunas de 8bits = 144, resultando numa matriz de 144 x 144
   Para acessar esta matriz, utilizo os métodos: void SetBitCost(int row, int col) e boolean GetBitCost(int row, int col)
 */
-#define MAXNODES 144
-#define MAXNODES_byte 18 //MAXNODES / 8
-#define ROW 12
-#define COL 12
-#define LADO_CUBO 20  //DIMENSAO DE CADA LADO DO QUADRADO (CELULA) NO ESPAÇO
-#define PASSO 2000
-#define GIRO_90 1000
+const int MAXNODES=144;
+const int MAXNODES_byte=18; //MAXNODES / 8
+const int ROW=12;
+const int COL=12;
+const int LADO_CUBO=20;  //DIMENSAO DE CADA LADO DO QUADRADO (CELULA) NO ESPAÇO
+const int PASSO=2000;
+const int GIRO_90=1000;
 
 #define RSSI_PIN 11
 #define TRIGGER_PIN  1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
@@ -30,10 +30,10 @@
 #define servoRight_parado 80
 #define servoRight_re 86
 #define servoRight_frente 76
-
-#define HM10_timeout  800  // Wait 800ms each time for BLE to response, depending on your application, adjust this value accordingly
-#define HM10_BUFFER_LENGTH 100
 #define macAlvo  "FC58FAB45824"
+
+const int HM10_timeout=800;  // Wait 800ms each time for BLE to response, depending on your application, adjust this value accordingly
+const int HM10_BUFFER_LENGTH=100;
 
 const int Dir_N=0;
 const int Dir_NE=1;
