@@ -1,0 +1,1 @@
+ 2cXOhr!build/sketch/libraries/HMC5883L.h

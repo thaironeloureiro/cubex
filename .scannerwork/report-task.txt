@@ -1,0 +1,7 @@
+organization=thaironeloureiro
+projectKey=thaironeloureiro_cubex
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.21157
+dashboardUrl=https://sonarcloud.io/dashboard?id=thaironeloureiro_cubex
+ceTaskId=AXokzA6tI26MRZ2BoI9O
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AXokzA6tI26MRZ2BoI9O
