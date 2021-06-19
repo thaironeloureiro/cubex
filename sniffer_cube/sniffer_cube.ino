@@ -544,7 +544,7 @@ boolean frente(int step_motor) {
     }
 
     //verificar tb distancia maior que a dimencao do quadro
-    if (dist_obs == 0 or dist_obs_em_quadros > 1 ) {
+    if (dist_obs == 0 or dist_obs_em_quadros > 1) {
       ret = true;
       if (DEBUG)  Serial.println("FRENTE");
 
