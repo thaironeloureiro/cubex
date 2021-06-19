@@ -28,8 +28,6 @@
 // 18 - PWM9 - SERVO SONAR  (angulo 78 -> centro)
 // 17 - PWM8 - servoRight
 
-
-
 char HM10_buffer[HM10_BUFFER_LENGTH];  // Buffer to store response
 
 Servo servoLeft;
@@ -494,7 +492,7 @@ boolean frente(int step_motor) {
   boolean tem_bloco_a_frente = false;
   int x_obstaculo, y_obstaculo, ind_obstaculo, dist_obs_em_quadros, x_afrente, y_afrente;
 
-  
+
   servoSonar.write(78); delay(50);
 
   //camputara coordenadas da posição atual
