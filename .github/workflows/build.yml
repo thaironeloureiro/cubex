@@ -61,9 +61,9 @@ jobs:
           python convert-compile-commands.py $PWD/build/compile_commands.json
           cp cfamily-compilation-database/build-wrapper-dump.json build/
           echo "--------------------------------------------------"
-          
-          
-          sonar-scanner   -Dsonar.organization=thaironeloureiro   -Dsonar.projectKey=thaironeloureiro_cubex   -Dsonar.sources=.   -Dsonar.cfamily.build-wrapper-output=bw-output   -Dsonar.host.url=https://sonarcloud.io
+                    
+          echo ">>>>>> bash sonarcloud/build.sh"
+          bash sonarcloud/sonar.sh
 
           
       
