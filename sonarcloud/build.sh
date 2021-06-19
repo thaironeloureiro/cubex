@@ -1,6 +1,6 @@
 #!/bin/bash
 #echo ">>>>>>>>>>>>>>>>>>>>>>>>>>"
-#export PATH=$PATH:$HOME/bin
+export PATH=$PATH:$HOME/bin
 #arduino-cli compile -b arduino:avr:mega --build-path $PWD/build sniffer_cube/sniffer_cube
 #linha interessante para editar a versão do 
 #sed -Ei 's/#define HARDWARE_VERSION [0-9]+/#define HARDWARE_VERSION 2/' src/software/firmware/includes/config.h
