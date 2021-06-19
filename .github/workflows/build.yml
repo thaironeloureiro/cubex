@@ -46,7 +46,8 @@ jobs:
         run: |
           unzip -o build-wrapper-linux-x86.zip
           echo "build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh"
-          build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh
+          
+          build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build arduino-cli compile --build-path $PWD/build -b arduino:avr:mega --verbose sniffer_cube  --clean
           
           echo "ls -l $PWD/build/sketch"
           ls -l $PWD/build/sketch
