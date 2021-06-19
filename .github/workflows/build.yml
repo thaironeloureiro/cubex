@@ -45,8 +45,7 @@ jobs:
       - name: Build wrapper
         run: |
           curl -L -O https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-          unzip -o build-wrapper-linux-x86.zip
-          arduino-cli cache clean
+          unzip -o build-wrapper-linux-x86.zip          
           echo "build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh"
           build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir $PWD/build bash sonarcloud/build.sh
           
