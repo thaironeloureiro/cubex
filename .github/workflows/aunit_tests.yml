@@ -17,6 +17,8 @@ jobs:
 
     - name: Verify examples
       run: |
+        pwd
+        ls -l
         make -C examples
 
     - name: Verify tests
