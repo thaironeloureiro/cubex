@@ -1,1 +1,0 @@
-` 2cppXhr*Mecha_QMC5883L/example/azimuth/azimuth.ino
