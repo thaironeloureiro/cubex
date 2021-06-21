@@ -6,11 +6,11 @@
   usando 20.990 bytes (8%) de espaço de armazenamento para programas
   Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 bytes para variáveis locais. O máximo são 8.192 bytes.
 */
-#define UNIT_TEST
+#define UNIT_TEST 1
 
-#ifdef UNIT_TEST
-#include <AUnit.h>
-using namespace aunit;
+#if UNIT_TEST == 1
+  #include <AUnit.h>
+  using namespace aunit;
 #endif
 
 #include <EEPROM.h>
@@ -62,10 +62,12 @@ HMC5883L bussola; //Instância a biblioteca para a bússola
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
 
 void setup()
-{
+{    
   Serial.begin(9600);
   Serial3.begin(9600); //HM10
+  delay(1000); 
 
+ 
   Serial.println("Initialize HMC5883L");
   while (!bussola.begin())
   {
@@ -204,9 +206,7 @@ void setup()
     Serial.println("[P][SEM_ROTA]");
   }
   //Serial.println("[D][FIM SETUP]");
-  #ifdef UNIT_TEST
-    aunit::TestRunner::run();
-  #endif
+  
 }
 
 
@@ -1117,7 +1117,11 @@ boolean getPath(char dest, char prev[]) {
   if (prev[x] == 0) ret = false;
   else
   {    
-    
+    ret = true;
+    #if UNIT_TEST ==1
+     //aprimorar teste futuramente
+    #else 
+
     #if DEBUG == 1
       Serial.println("invertido");
       Serial.println(inv[0], DEC);
@@ -1148,7 +1152,7 @@ boolean getPath(char dest, char prev[]) {
 
       Serial.print("[P][PATH]"); Serial.println(path[c], DEC);
     }
-    ret = true;
+   #endif 
   }
   return ret;
 }
@@ -1332,19 +1336,22 @@ void passo() {
   Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
 }
 
-void loop() {
-
+void loop() {  
+  #if UNIT_TEST == 1        
+    aunit::TestRunner::run();
+  #else
+ 
   if (novo_obstaculo == true)
   {
     novo_obstaculo = false;
     //getGrid();
     createMap(); //cria Matriz de Custos
 
-#if DEBUG == 1
+  #if DEBUG == 1
     printGrid();
-#endif
+  #endif
     dijkstra(posicao_atual);
-#if DEBUG == 1
+  #if DEBUG == 1
     Serial.println(); Serial.println();
     Serial.print("Caminho de ");
     Serial.print(posicao_atual, DEC); Serial.print(" a "); Serial.println(destino, DEC);
@@ -1431,4 +1438,5 @@ void loop() {
       tem_rota = getPath(destino, prev);
     }
   }
+ #endif
 }
