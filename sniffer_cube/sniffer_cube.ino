@@ -6,6 +6,12 @@
   usando 20.990 bytes (8%) de espaço de armazenamento para programas
   Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 bytes para variáveis locais. O máximo são 8.192 bytes.
 */
+#define UNIT_TEST
+
+#ifdef UNIT_TEST
+#include <AUnit.h>
+using namespace aunit;
+#endif
 
 #include <EEPROM.h>
 #include <limits.h>
@@ -66,8 +72,6 @@ void setup()
     Serial.println("Could not find a valid HMC5883L sensor, check wiring!");
     delay(500);
   }
-
-
 
   //Configura a bússola
   bussola.setRange(HMC5883L_RANGE_1_3GA);
@@ -186,17 +190,23 @@ void setup()
 
 
   createMap(); //cria Matriz de Custos
-  if (DEBUG) printGrid();
-  // delay(100);
-  if (DEBUG) printMap();
+  #if DEBUG == 1
+    printGrid();
+    printMap();
+  #endif
   dijkstra(posicao_atual);
 
   tem_rota = getPath(destino, prev);
   if (tem_rota == false) {
-    if (DEBUG) Serial.println("Nao Ha rota para este destino.");
+    #if DEBUG == 1
+      Serial.println("Nao Ha rota para este destino.");
+    #endif
     Serial.println("[P][SEM_ROTA]");
   }
   //Serial.println("[D][FIM SETUP]");
+  #ifdef UNIT_TEST
+    aunit::TestRunner::run();
+  #endif
 }
 
 
@@ -446,15 +456,15 @@ float getDistancia() {
   else
     rssi = getRSSI();
 
-  if (DEBUG) {
-    Serial.print("rssi coletado em getDistancia:");
-    Serial.println(rssi);
-  }
+#if DEBUG == 1
+  Serial.print("rssi coletado em getDistancia:");
+  Serial.println(rssi);
+#endif
 
   expo = ((float)(rssi - rssi_ref) / (float)(-10 * N));
-  if (DEBUG) {
-    Serial.print("Expo:"); Serial.println(expo);
-  }
+#if DEBUG == 1
+  Serial.print("Expo:"); Serial.println(expo);
+#endif
 
   d = pow(10, expo);
 
@@ -517,13 +527,13 @@ boolean frente(int step_motor) {
 
     //se houver obstácuo a frente...
     if (dist_obs > 0) {
-      if (DEBUG) {
-        Serial.println("Obstaculo a frente: ");
-        Serial.print(dist_obs);
-        Serial.println("cm / ");
-        Serial.print(dist_obs_em_quadros);
-        Serial.println(" quadros a frente.");
-      }
+#if DEBUG == 1
+      Serial.println("Obstaculo a frente: ");
+      Serial.print(dist_obs);
+      Serial.println("cm / ");
+      Serial.print(dist_obs_em_quadros);
+      Serial.println(" quadros a frente.");
+#endif
 
       //deslocamente cartesiano de uma casa com base na orientacao
       if (direcao == Dir_N) y_obstaculo = max(0, y_obstaculo - dist_obs_em_quadros); //a diferença ou zero (caso o deslocamento seja negativo)
@@ -544,7 +554,9 @@ boolean frente(int step_motor) {
     //verificar tb distancia maior que a dimencao do quadro
     if (dist_obs == 0 or dist_obs_em_quadros > 1) {
       ret = true;
-      if (DEBUG)  Serial.println("FRENTE");
+#if DEBUG == 1
+      Serial.println("FRENTE");
+#endif
 
       servoLeft.write(servoLeft_frente);
       servoRight.write(servoRight_frente);
@@ -560,7 +572,9 @@ void re(int step_motor) {
   //deve checar obstaculo.
   //se houver deve marcar no grid o quadro de tras como sendo ocupado
   servoSonar.write(78); delay(50);
-  if (DEBUG) Serial.println("RE");
+#if DEBUG == 1
+  Serial.println("RE");
+#endif
 
   servoLeft.write(servoLeft_re);
   servoRight.write(servoRight_re);
@@ -569,7 +583,9 @@ void re(int step_motor) {
 
 
 void esquerda(int step_motor) {
-  if (DEBUG) Serial.println("ESQUERDA");
+#if DEBUG == 1
+  Serial.println("ESQUERDA");
+#endif
   servoSonar.write(180); delay(50);
 
   if (step_motor == GIRO_90) {
@@ -587,7 +603,9 @@ void esquerda(int step_motor) {
 }
 
 void direita(int step_motor) {
-  if (DEBUG) Serial.println("DIREITA");
+#if DEBUG == 1
+  Serial.println("DIREITA");
+#endif
   servoSonar.write(50);
   delay(50);
   if (step_motor == GIRO_90) {
@@ -605,7 +623,9 @@ void direita(int step_motor) {
 }
 
 void parar(int step_motor) {
-  if (DEBUG) Serial.println("PARADA");
+#if DEBUG == 1
+  Serial.println("PARADA");
+#endif
 
   servoSonar.write(78); delay(50);
   servoLeft.write(servoLeft_parado);
@@ -620,19 +640,19 @@ void corrigir_direcao(int direcao_teorica)
   //a cada movimentacao buscar a oriencatacao pela bussola e ajustar o deslocamento para
   //calibrar a direcao com a obtida pelo sensor
 
-  if (DEBUG) {
-    Serial.print("[D][DIRECAO_TEORICA]: ");
-    Serial.println(direcao_teorica);
-  }
+#if DEBUG == 1
+  Serial.print("[D][DIRECAO_TEORICA]: ");
+  Serial.println(direcao_teorica);
+#endif
 
   if (bussola_EMULADA)  direcao = direcao_teorica;
   else
     direcao = getDirecao(); //deve obter a orientacao
 
-  if (DEBUG) {
-    Serial.print("[D][direcao]");
-    Serial.println(direcao);
-  }
+#if DEBUG == 1
+  Serial.print("[D][direcao]");
+  Serial.println(direcao);
+#endif
 
   if (direcao_teorica == Dir_N)
     if (direcao == Dir_NE or direcao == Dir_L or direcao == Dir_SE or direcao == Dir_S)
@@ -687,14 +707,14 @@ char getDestino() {
 
   Serial.print("[P][DISTANCIA1]"); Serial.println(d1, DEC);
 
-  if (DEBUG) {
-    Serial.print("GETDestino ATUAL:");
-    Serial.print(posicao_atual, DEC);
-    Serial.print(" X1: ");
-    Serial.print(x1);
-    Serial.print("\t Y1: ");
-    Serial.println(y1);
-  }
+#if DEBUG == 1
+  Serial.print("GETDestino ATUAL:");
+  Serial.print(posicao_atual, DEC);
+  Serial.print(" X1: ");
+  Serial.print(x1);
+  Serial.print("\t Y1: ");
+  Serial.println(y1);
+#endif
   //CAPTURA DISTANCIA 2
   x2 = x1;
   y2 = y1;
@@ -706,14 +726,14 @@ char getDestino() {
       //considerando a direncao como N, basta subtrair o Y em 1 unidade
       y2--;
       posicao_atual = getIndice(x2, y2);
-      if (DEBUG) {
-        Serial.print("GETDestino ATUAL:");
-        Serial.print(posicao_atual, DEC);
-        Serial.print(" X2: ");
-        Serial.print(x2);
-        Serial.print("\t Y2: ");
-        Serial.println(y2);
-      }
+#if DEBUG == 1
+      Serial.print("GETDestino ATUAL:");
+      Serial.print(posicao_atual, DEC);
+      Serial.print(" X2: ");
+      Serial.print(x2);
+      Serial.print("\t Y2: ");
+      Serial.println(y2);
+#endif
       Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
     } else { //andou==false, significa que não pode ir para frente, nesse caso gira para a direita
       direita(GIRO_90); //direcao a Leste
@@ -1070,7 +1090,7 @@ void dijkstra(char src)
         Actualiza dist[V], somente se não está em sptSet, existe uma aresta de u para v, e o peso total de caminho
         de src para v através de u é menor do que o valor actual da dist[v]
       */
-      int custo = int(GetBitCost(u, v));
+      int custo = int(GetBitCost(u, v)); //Para custo==0 -> celula bloqueada por obstáculo
 
       if (!sptSet[v] && custo && dist[u] != INT_MAX
           && dist[u] + custo < dist[v]) {
@@ -1081,40 +1101,51 @@ void dijkstra(char src)
   }
 
   //imprimir a matriz de distância
-  if (DEBUG) printSolution(dist);
+#if DEBUG == 1
+  printSolution(dist);
+#endif
 }
-
 
 boolean getPath(char dest, char prev[]) {
   char x = dest;
-  Qtd_Passos = int(GetBitCost(posicao_atual, dest));
-  char inv[Qtd_Passos];
+  char inv[MAXNODES];
   boolean ret;
-  if (Qtd_Passos == INT_MAX) ret = false;
+  int i = 1;
+  
+  inv[0] = x;
+    
+  if (prev[x] == 0) ret = false;
   else
-  {
-    if (DEBUG) Serial.println("invertido");
-    x = dest;
-    inv[0] = x;
-    int i = 1;
-    if (DEBUG) Serial.println(inv[0], DEC);
+  {    
+    
+    #if DEBUG == 1
+      Serial.println("invertido");
+      Serial.println(inv[0], DEC);
+    #endif
+    
     while (prev[x] > 0) {
       x = prev[x];
       inv[i] = x;
-      if (DEBUG) Serial.println(inv[i], DEC);
+      #if DEBUG == 1
+        Serial.println(inv[i], DEC);
+      #endif
       i++;
     }
 
     //ajusta prev[] que ate entao possui o caminho invertido (do destin para origem), visto que a partir do destino, obtenho o seu antecessor
     //abaixo inverto a pilha
-    if (DEBUG) Serial.println("em orderm");
     i--;
     int ind_fim = i;
     for (int c = 0 ; c <= i ; c++) {
       ind_fim = i - c;
       path[c] = inv[ind_fim];
 
-      if (DEBUG) Serial.println(path[c], DEC);
+      #if DEBUG == 1
+        Serial.println("em orderm");
+        Serial.println("em orderm");
+        Serial.println(path[c], DEC);
+      #endif
+
       Serial.print("[P][PATH]"); Serial.println(path[c], DEC);
     }
     ret = true;
@@ -1211,13 +1242,12 @@ void passo() {
   }
 
 
-  if (DEBUG) {
-
-    Serial.print("Atual: ");
-    Serial.println(posicao_atual, DEC);
-    Serial.print("Proximo passo: ");
-    Serial.println(prox, DEC);
-  }
+#if DEBUG == 1
+  Serial.print("Atual: ");
+  Serial.println(posicao_atual, DEC);
+  Serial.print("Proximo passo: ");
+  Serial.println(prox, DEC);
+#endif
   Serial.print("[P][PROXIMO]"); Serial.println(prox);
   if (getCol(prox) < getCol(posicao_atual)) {
     //quadro a esquerda
@@ -1302,36 +1332,7 @@ void passo() {
   Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
 }
 
-
-
-int count_loop = 0;
 void loop() {
-
-  //DEBUG
-  /*
-    while (Serial.available()) {   // loop and read the data
-      char a = Serial.read();
-      if (a == 'd') flag_d = 1;
-      if (a == 'r') flag_d = 2;
-    }
-
-    if (flag_d == 1) {
-      flag_d = 0;
-      d = getDistancia();
-      Serial.print("Distancia: ");
-      Serial.println(d);
-    }
-    else if (flag_d == 2) {
-      int rssi;
-      delay(200);
-      rssi = HM10disc();
-      delay(200);
-      Serial.print("Loop Valor do RSSI:");
-      Serial.println(rssi);
-    }
-  */
-
-
 
   if (novo_obstaculo == true)
   {
@@ -1339,13 +1340,15 @@ void loop() {
     //getGrid();
     createMap(); //cria Matriz de Custos
 
-    if (DEBUG)  printGrid();
+#if DEBUG == 1
+    printGrid();
+#endif
     dijkstra(posicao_atual);
-    if (DEBUG) {
-      Serial.println(); Serial.println();
-      Serial.print("Caminho de ");
-      Serial.print(posicao_atual, DEC); Serial.print(" a "); Serial.println(destino, DEC);
-    }
+#if DEBUG == 1
+    Serial.println(); Serial.println();
+    Serial.print("Caminho de ");
+    Serial.print(posicao_atual, DEC); Serial.print(" a "); Serial.println(destino, DEC);
+#endif
     Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
     tem_rota = getPath(destino, prev);
     fim = false;
@@ -1358,10 +1361,10 @@ void loop() {
       //chegou, mas o destino ainda não eh o real, pois esta fora dos limites da grade
       if (destino_fora_da_grade)
       {
-        if (DEBUG) {
-          Serial.println("Chegou ao limite proximo do destino.");
-          Serial.println("recreiando grid e calculando posição do destino.");
-        }
+#if DEBUG == 1
+        Serial.println("Chegou ao limite proximo do destino.");
+        Serial.println("recreiando grid e calculando posição do destino.");
+#endif
         chegou = false;
         Serial.println("[P][CLEARGRID]");
         clearGrid();
@@ -1370,8 +1373,9 @@ void loop() {
         destino =  getDestino();
         direcao = getDirecao(); //deve obter a orientacao
         createMap(); //cria Matriz de Custos
-        if (DEBUG) printGrid();
-        //if (DEBUG)   printMap();
+#if DEBUG == 1
+        printGrid();
+#endif
         dijkstra(posicao_atual);
         tem_rota = getPath(destino, prev);
         //if (tem_rota == false) {
@@ -1393,7 +1397,9 @@ void loop() {
       fim = true;
     }
     else {
-      if (DEBUG) Serial.println("nao eh o fim");
+#if DEBUG == 1
+      Serial.println("nao eh o fim");
+#endif
       passo();
     }
   }// if (fim == false)
@@ -1416,17 +1422,13 @@ void loop() {
       destino =  novo_destino;
       direcao = getDirecao(); //deve obter a orientacao
       createMap(); //cria Matriz de Custos
-      if (DEBUG) printGrid();
+#if DEBUG == 1
+      printGrid();
       //if (DEBUG) printMap();
+#endif
       dijkstra(posicao_atual);
 
       tem_rota = getPath(destino, prev);
     }
-  }
-
-  count_loop++;
-  if (DEBUG) {
-    Serial.print("Count Loop:");
-    Serial.println(count_loop);
   }
 }
