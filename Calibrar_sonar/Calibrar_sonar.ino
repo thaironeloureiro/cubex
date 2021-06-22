@@ -1,9 +1,9 @@
 /*
-CUBEX v3.0
-Thairone S. Loureiro
+  CUBEX v3.0
+  Thairone S. Loureiro
 
-usando 18.630 bytes (7%) de espaço de armazenamento para programas
-Variáveis globais usam 3.985 bytes (48%) de memória dinâmica, deixando 4.207 bytes para variáveis locais. O máximo são 8.192 bytes.
+  usando 18.630 bytes (7%) de espaço de armazenamento para programas
+  Variáveis globais usam 3.985 bytes (48%) de memória dinâmica, deixando 4.207 bytes para variáveis locais. O máximo são 8.192 bytes.
 */
 
 
@@ -28,7 +28,7 @@ NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and
 void setup()
 {
   Serial.begin(9600);
-  
+
   Serial.println();        Serial.println();        Serial.println();
   Serial.println("****************************************");
 
@@ -38,11 +38,11 @@ void setup()
 
 
 float getSonar() {
- const int numReadings = 10;
- int readings[numReadings];       
- int total = 0;                  
- unsigned int average = 0;       
- float ret;
+  const int numReadings = 10;
+  int readings[numReadings];
+  int total = 0;
+  unsigned int average = 0;
+  float ret;
 
   //coleta com smoothig
   for (int thisReading = 0; thisReading < numReadings; thisReading++)
@@ -50,15 +50,15 @@ float getSonar() {
 
   for (int readIndex = 0; readIndex < numReadings; readIndex++)
   {
-     // subtract the last reading:
+    // subtract the last reading:
     total = total - readings[readIndex];
     // read from the sensor:
     delay(50);
-    readings[readIndex] = sonar.ping();    
-    total = total + readings[readIndex];       
-    average = total / numReadings;    
+    readings[readIndex] = sonar.ping();
+    total = total + readings[readIndex];
+    average = total / numReadings;
   }
-  
+
   ret = average / US_ROUNDTRIP_CM; // Convert ping time to distance in cm and print result (0 = outside set distance range)
   return ret;
 }
@@ -66,7 +66,21 @@ float getSonar() {
 
 void loop() {
   float dist_obs;
+  const int LADO_CUBO = 20;
   dist_obs = getSonar();
+  int dist_obs_em_quadros=0;
   Serial.print("distancia: ");
-  Serial.println(dist_obs);  
+  Serial.println(dist_obs);
+
+
+  if (dist_obs > 2.0 and dist_obs < 60.0)
+    dist_obs_em_quadros =  round(dist_obs / LADO_CUBO);
+  else  dist_obs = 0;
+
+  Serial.print("Obstaculo a frente: ");
+  Serial.print(dist_obs);
+  Serial.print(" cm / ");
+  Serial.print(" quadros a frente:");
+  Serial.println(dist_obs_em_quadros);
+  
 }
