@@ -11,8 +11,8 @@ const int MAXNODES_byte=18; //MAXNODES / 8
 const int ROW=12;
 const int COL=12;
 const int LADO_CUBO=20;  //DIMENSAO DE CADA LADO DO QUADRADO (CELULA) NO ESPAÇO
-const int PASSO=2000;
-const int GIRO_90=1000;
+const int PASSO=6000;
+const int GIRO_90=3000;
 
 #define RSSI_PIN 11
 #define TRIGGER_PIN  1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
@@ -21,6 +21,7 @@ const int MAX_DISTANCE=200; // Maximum distance we want to ping for (in centimet
 
 #define DEBUG 0
 #define rssi_EMULADO 1
+#define destino_ALEATORIO 1
 #define bussola_EMULADA 1
 
 const int servoLeft_parado=82;
