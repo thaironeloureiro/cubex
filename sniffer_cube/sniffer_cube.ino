@@ -505,7 +505,6 @@ boolean frente(int step_motor) {
   boolean tem_bloco_a_frente = false;
   int x_obstaculo, y_obstaculo, ind_obstaculo, dist_obs_em_quadros, x_afrente, y_afrente;
 
-
   servoSonar.write(78); delay(50);
 
   //camputara coordenadas da posição atual
@@ -520,8 +519,8 @@ boolean frente(int step_motor) {
   else if (direcao == Dir_O) x_afrente--;
   else if (direcao == Dir_L) x_afrente++;
 
-  //a depender da direção atual, verificar se a posição a frente está no limite
-  if (x_afrente >= 0 && y_afrente >= 0 && x_afrente < COL && y_afrente < ROW) {
+  //a depender da direção atual, verificar se a posição a frente está no limite ou é um bloqueio
+  if (grid[x_afrente][y_afrente] == 1 && x_afrente >= 0 && y_afrente >= 0 && x_afrente < COL && y_afrente < ROW) {
 
     dist_obs = getSonar();
     if (dist_obs > 2.0 and dist_obs < 60.0)
@@ -530,13 +529,13 @@ boolean frente(int step_motor) {
 
     //se houver obstácuo a frente...
     if (dist_obs > 0) {
-      #if DEBUG == 1
-        Serial.println("Obstaculo a frente: ");
+      //#if DEBUG == 1
+        Serial.print("Obstaculo a frente: ");
         Serial.print(dist_obs);
-        Serial.println("cm / ");
-        Serial.print(dist_obs_em_quadros);
-        Serial.println(" quadros a frente.");
-      #endif
+        Serial.print("cm / ");
+        Serial.print(" quadros a frente: ");
+        Serial.println(dist_obs_em_quadros);        
+      //#endif
 
       //deslocamente cartesiano de uma casa com base na orientacao
       if (direcao == Dir_N) y_obstaculo = max(0, y_obstaculo - dist_obs_em_quadros); //a diferença ou zero (caso o deslocamento seja negativo)
@@ -544,14 +543,13 @@ boolean frente(int step_motor) {
       if (direcao == Dir_O) x_obstaculo = max(0, x_obstaculo - dist_obs_em_quadros);
       if (direcao == Dir_L) x_obstaculo = min(COL - 1, x_obstaculo + dist_obs_em_quadros);
 
-      if (x_obstaculo >= 0 && y_obstaculo >= 0 && x_obstaculo < COL && y_obstaculo < ROW)
-      {
-        ind_obstaculo = getIndice(x_obstaculo, y_obstaculo);
-        //EEPROM.write(ind_obstaculo, 1); //grava na eeprom informacao do obstaculo
-        grid[x_obstaculo][y_obstaculo] = 0;
-        novo_obstaculo = true;
-        Serial.print("[P][BLOCK]"); Serial.println(ind_obstaculo, DEC);
-      }
+      
+      ind_obstaculo = getIndice(x_obstaculo, y_obstaculo);
+      //EEPROM.write(ind_obstaculo, 1); //grava na eeprom informacao do obstaculo
+      grid[x_obstaculo][y_obstaculo] = 0;
+      novo_obstaculo = true;
+      Serial.print("[P][BLOCK]"); Serial.println(ind_obstaculo, DEC);
+      
     }
 
     //verificar tb distancia maior que a dimencao do quadro
@@ -1350,15 +1348,18 @@ void loop() {
     //getGrid();
     createMap(); //cria Matriz de Custos
 
-  #if DEBUG == 1
-    printGrid();
-  #endif
+    #if DEBUG == 1
+      printGrid();
+    #endif
+    
     dijkstra(posicao_atual);
-  #if DEBUG == 1
-    Serial.println(); Serial.println();
-    Serial.print("Caminho de ");
-    Serial.print(posicao_atual, DEC); Serial.print(" a "); Serial.println(destino, DEC);
-#endif
+    
+    #if DEBUG == 1
+      Serial.println(); Serial.println();
+      Serial.print("Caminho de ");
+      Serial.print(posicao_atual, DEC); Serial.print(" a "); Serial.println(destino, DEC);
+    #endif
+    
     Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
     tem_rota = getPath(destino, prev);
     fim = false;
@@ -1425,8 +1426,6 @@ void loop() {
       novo_obstaculo = false;
       fim = false;
       destino_fora_da_grade = false;
-      //posicao_atual = 64; //posicao inicial no meio do grid
-     
       direcao = getDirecao(); //deve obter a orientacao
       clearGrid();
       createMap(); //cria Matriz de Custos
