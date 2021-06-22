@@ -143,7 +143,6 @@ void draw() {
         println("|");
       }
 
-      ind=33;
       y=getRow(ind);
       x=getCol(ind);   
       if (DEBUG) {
@@ -206,9 +205,9 @@ void draw() {
     text(lista_no, 620, 320, 160, 600);  // Text wraps within text box
   }
 
-  print_distance(c1,d1);
-  print_distance(c2,d2);
-  print_distance(c3,d3);
+  print_distance(c1,d1,0);
+  print_distance(c2,d2,200);
+  print_distance(c3,d3,400);
 }
 
 // A Cell object
@@ -306,7 +305,7 @@ int getCol(int ind) {
   return C;
 }
 
-void print_distance(int centro,float distancia) {
+void print_distance(int centro,float distancia,int cor) {
   int x, y;
   
   if (centro>-1) {
@@ -315,7 +314,7 @@ void print_distance(int centro,float distancia) {
     //print("centro: ");print(centro);print("x: ");print(x);print("y: ");println(y);    
     float raio=((distancia*100)*lado_cel)/lado_cel_arduino;
     float distancia_ajustada=raio*2;
-    fill(255, 0, 0, 10);
+    fill(255, cor, 0, 10);
     circle(x+25, y+25, distancia_ajustada);
   }  
 }
