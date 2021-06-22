@@ -967,7 +967,7 @@ int getDirecao() {
     }
   }
 
-  int headvalue = fixedHeadingDegrees / 36; //285 graus/8 posições= ~36
+  int headvalue = fixedHeadingDegrees/36; //285 graus/8 posições= ~36
   int ind_heading = map(headvalue, 0, 7, 0, 7);
 
   //==============================
