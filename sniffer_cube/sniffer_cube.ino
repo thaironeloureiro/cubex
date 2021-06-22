@@ -961,7 +961,7 @@ int getDirecao() {
     fixedHeadingDegrees = map (headingDegrees * 100, 0, 239 * 100, 0, 179 * 100) / 100.00;
   }
   else {
-    if (headingDegrees >= 240)
+    if(headingDegrees >= 240)
     {
       fixedHeadingDegrees = map (headingDegrees * 100, 240 * 100, 360 * 100, 180 * 100, 360 * 100) / 100.00;
     }
