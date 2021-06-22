@@ -11,12 +11,11 @@ Variáveis globais usam 3.985 bytes (48%) de memória dinâmica, deixando 4.207 
 #include <stdio.h>
 #include <Wire.h>
 #include <NewPing.h>
-#include <Firmata.h>
-#include <Math.h>
+#include <math.h>
 
 
-#define TRIGGER_PIN  12  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN     11  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_PIN  A1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN     A0  // Arduino pin tied to echo pin on the ultrasonic sensor.
 #define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 
