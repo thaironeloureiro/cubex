@@ -15,8 +15,8 @@ const int PASSO=6000;
 const int GIRO_90=3000;
 
 #define RSSI_PIN 11
-#define TRIGGER_PIN  1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
-#define ECHO_PIN     0  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define TRIGGER_PIN  A1  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN     A0  // Arduino pin tied to echo pin on the ultrasonic sensor.
 const int MAX_DISTANCE=200; // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 #define DEBUG 0
