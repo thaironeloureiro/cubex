@@ -524,8 +524,8 @@ boolean frente(int step_motor) {
   if (x_afrente >= 0 && y_afrente >= 0 && x_afrente < COL && y_afrente < ROW) {
 
     dist_obs = getSonar();
-    if (dist_obs > 2 and dist_obs < 60)
-      dist_obs_em_quadros =  (int) (dist_obs / LADO_CUBO);
+    if (dist_obs > 2.0 and dist_obs < 60.0)
+      dist_obs_em_quadros =  round(dist_obs / LADO_CUBO);
     else  dist_obs = 0;
 
     //se houver obstácuo a frente...
@@ -856,10 +856,8 @@ float getSonar() {
     readings[thisReading] = 0;
 
   for (int readIndex = 0; readIndex < numReadings; readIndex++)
-  {
-    // subtract the last reading:
-    total = total - readings[readIndex];
-    // read from the sensor:
+  {    
+    total = total - readings[readIndex];   
     delay(50);
     readings[readIndex] = sonar.ping();
     total = total + readings[readIndex];
