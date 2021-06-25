@@ -14,6 +14,7 @@ const int LADO_CUBO=20;  //DIMENSAO DE CADA LADO DO QUADRADO (CELULA) NO ESPAÇO
 const int PASSO=6000;
 const int GIRO_90=3000;
 const int GIRO_180=6000;
+const int GIRO_CORRECAO=100;
 
 #define RSSI_PIN 11
 #define TRIGGER_PIN  A1  // Arduino pin tied to trigger pin on the ultrasonic sensor.

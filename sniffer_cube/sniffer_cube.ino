@@ -3,8 +3,8 @@
   Thairone Simões Loureiro
   2021
 
-  usando 20.990 bytes (8%) de espaço de armazenamento para programas
-  Variáveis globais usam 4.948 bytes (60%) de memória dinâmica, deixando 3.244 bytes para variáveis locais. O máximo são 8.192 bytes.
+O sketch usa 20390 bytes (8%) de espaço de armazenamento para programas. O máximo são 253952 bytes.
+Variáveis globais usam 4776 bytes (58%) de memória dinâmica, deixando 3416 bytes para variáveis locais. O máximo são 8192 bytes.
 */
 #define UNIT_TEST 0
 
@@ -155,7 +155,7 @@ void setup()
     #endif
     Serial.println("[P][SEM_ROTA]");
   }
-  //Serial.println("[D][FIM SETUP]");
+  Serial.println("[D][FIM SETUP]");
 }
 
 
@@ -219,13 +219,15 @@ boolean HM10IsReady() {
   }
 }
 
+/*
+Função para enviar comandos AT para o HM10 com controle de timeout com contador assincrono
+*/
 boolean HM10Cmd(long timeout, char* command, char* temp) {
   long endtime;
   boolean found = false;
   endtime = millis() + timeout; //
   memset(temp, 0, HM10_BUFFER_LENGTH); // clear buffer
   found = true;
-
 
   Serial.print("Arduino send = ");
   Serial.println(command);
@@ -260,7 +262,14 @@ boolean HM10Cmd(long timeout, char* command, char* temp) {
   }
 }
 
-
+/*
+Função para receber informações sobre RSSI dos dispositivos bluetooth
+é enviado o comando AT+DISC? que faz a varredura e retorna dados como estes:
+OK+DISC
+OK+DIS0:FC58FAB45824OK+RSSI:-050
+OJ+DIS0:6872C34E72B2OK+RSSI:-050
+OK+DISCE
+*/
 int HM10disc() {
   long endtime;
   long timeout = 10000;
@@ -297,7 +306,6 @@ int HM10disc() {
       case 0:
         while (Serial3.available()) {
           data = Serial3.read();
-          //Serial.print(data); //DEBUG
           switch (data) {
             case '\r':
               break;
@@ -344,7 +352,6 @@ int HM10disc() {
         }
         memset(listBLE, 0, sizeof(listBLE));
         estado = 0;
-        //Serial.println("Estado: 2->0");  //debug
         break;
     }
   }
@@ -391,7 +398,9 @@ int getRSSI() {
   return precisao;
 }
 
-
+/*
+Estima a distância até o iBeacon sendo esta o raio de uma circunferência
+*/
 float getDistancia() {
   int rssi;
   float d=0;
@@ -424,7 +433,9 @@ float getDistancia() {
   return d;
 }
 
-
+/*
+Dadas as coordenadas do plano x,y obtem-se o indice que representa cada nó da matriz ROWxCOL
+*/
 int getIndice(int x, int y) {
   int indice = -1;
   int x_tmp;
@@ -438,17 +449,29 @@ int getIndice(int x, int y) {
   return indice;
 }
 
+/*
+retorna o número da linha da matriz ROWxCOL a partir do indice do nó, usado para definir a coordenada x
+*/
 int getRow(int ind) {
   int L;
   L = ind / ROW;
   return L;
 }
 
+/*
+retorna o número da coluna da matriz ROWxCOL a partir do indice do nó, usado para definir a coordenada y
+*/
 int getCol(int ind) {
   int C;
   C = ind % ROW;
   return C;
 }
+
+/*
+Responsável por executar a movimentação do módulo uma casa a frente.
+Retorna true se a movimentação for possível de ser executada, levando em consideração
+o fato da possibilidade de exisir obstáculos a frente.
+*/
 boolean frente(int step_motor) {
   float dist_obs;
   boolean ret = false;
@@ -492,7 +515,6 @@ boolean frente(int step_motor) {
       if (direcao == Dir_S) y_obstaculo = min(ROW - 1, y_obstaculo + dist_obs_em_quadros);
       if (direcao == Dir_O) x_obstaculo = max(0, x_obstaculo - dist_obs_em_quadros);
       if (direcao == Dir_L) x_obstaculo = min(COL - 1, x_obstaculo + dist_obs_em_quadros);
-
       
       ind_obstaculo = getIndice(x_obstaculo, y_obstaculo);
       //EEPROM.write(ind_obstaculo, 1); //grava na eeprom informacao do obstaculo
@@ -523,6 +545,7 @@ boolean frente(int step_motor) {
       servoLeft.write(servoLeft_frente);
       servoRight.write(servoRight_frente);
       delay(step_motor);
+      parar(1000);
       //delayMicroseconds(500);
       
       posicao_atual = getIndice(x_afrente, y_afrente);
@@ -531,7 +554,11 @@ boolean frente(int step_motor) {
   return ret;
 }
 
-
+/*
+Responsável por executar movimentos de ré
+Existem pendências nas restrições desta ação ainda não implementadas
+Por hora essa função não está em uso
+*/
 void re(int step_motor) {
   //deve checar obstaculo.
   //se houver deve marcar no grid o quadro de tras como sendo ocupado
@@ -543,19 +570,20 @@ void re(int step_motor) {
   servoLeft.write(servoLeft_re);
   servoRight.write(servoRight_re);
   delay(step_motor);
+  parar(1000);
   //falta ajustar a posição atual considerando a direção
   // como em frente():
   //posicao_atual = getIndice(x_afrente, y_afrente);
 }
 
-
+/*
+Executa rotação de 90 graus à esquerda, podendo ser de movimento duplo
+*/
 void esquerda(int step_motor) {
   #if DEBUG == 1
     Serial.println("ESQUERDA");
   #endif
-  servoSonar.write(180); delay(50);
-
-  
+  servoSonar.write(180); delay(50);  
 
   if (step_motor == GIRO_90) {
     switch (direcao) {
@@ -572,11 +600,6 @@ void esquerda(int step_motor) {
         direcao = Dir_S;
         break;
     }   
-    
-    servoLeft.write(servoLeft_re);
-    servoRight.write(servoRight_frente);
-    delay(step_motor);
-    servoSonar.write(78);
   }else if (step_motor == GIRO_180) {
     switch (direcao) {
       case Dir_N:
@@ -592,30 +615,25 @@ void esquerda(int step_motor) {
         direcao = Dir_L;
         break;
     }   
-    
-    servoLeft.write(servoLeft_re);
-    servoRight.write(servoRight_frente);
-    delay(step_motor);
-    
-    delay(1000);
-    
-    servoLeft.write(servoLeft_re);
-    servoRight.write(servoRight_frente);
-    delay(step_motor);
-    
-    servoSonar.write(78);
   }
+
+  servoLeft.write(servoLeft_re);
+  servoRight.write(servoRight_frente);
+  delay(step_motor);
+  parar(1000);
+  servoSonar.write(78);
   Serial.print("[P][DIRECAO]"); Serial.println(direcao);
 }
 
+/*
+Executa rotação de 90 graus à direita, podendo ser de movimento duplo
+*/
 void direita(int step_motor) {
   #if DEBUG == 1
     Serial.println("DIREITA");
   #endif
   servoSonar.write(180); delay(50);
 
-  
-
   if (step_motor == GIRO_90) {
     switch (direcao) {
       case Dir_N:
@@ -631,11 +649,6 @@ void direita(int step_motor) {
         direcao = Dir_N;
         break;
     }   
-    
-    servoLeft.write(servoLeft_frente);
-    servoRight.write(servoRight_re);
-    delay(step_motor);
-    servoSonar.write(78);
   }else if (step_motor == GIRO_180) {
     switch (direcao) {
       case Dir_N:
@@ -651,22 +664,18 @@ void direita(int step_motor) {
         direcao = Dir_L;
         break;
     }   
-    
-    servoLeft.write(servoLeft_frente);
-    servoRight.write(servoRight_re);
-    delay(step_motor);
-    
-    delay(1000);
-    
-    servoLeft.write(servoLeft_frente);
-    servoRight.write(servoRight_re);
-    delay(step_motor);
-    
-    servoSonar.write(78);
   }
+  servoLeft.write(servoLeft_frente);
+  servoRight.write(servoRight_re);
+  delay(step_motor);
+  parar(1000);
+  servoSonar.write(78);
   Serial.print("[P][DIRECAO]"); Serial.println(direcao);
 }
 
+/*
+Interrompe a movimentação dos servos de rotação
+*/
 void parar(int step_motor) {
   #if DEBUG == 1
     Serial.println("PARADA");
@@ -678,12 +687,15 @@ void parar(int step_motor) {
   delay(step_motor);
 }
 
+/*
+Após a rotação, eventualmente o módulo pode não estar alinhado as direções N,S,L ou O
+Essa função corrige a rotação com base na leitura da bússola, relizando pequenas rotações
+Usar o parâmetro GIRO_CORRECAO para definir a duração de cada giro corretivo
+*/
 void corrigir_direcao(int direcao_teorica)
 {
   char sentido;
   sentido = 'A'; //A-antihorario / H - horario
-  //a cada movimentacao buscar a oriencatacao pela bussola e ajustar o deslocamento para
-  //calibrar a direcao com a obtida pelo sensor
 
   #if DEBUG == 1
     Serial.print("[D][DIRECAO_TEORICA]: ");
@@ -716,22 +728,24 @@ void corrigir_direcao(int direcao_teorica)
       sentido = 'A';
     else sentido = 'H';
 
-
   while (direcao_teorica != direcao)
   {
     Serial.print("[P][DIRECAO_TEORICA]"); Serial.println(direcao_teorica);
     Serial.print("[P][DIRECAO]"); Serial.println(direcao);
 
     if (sentido == 'A')
-      esquerda(100);
+      esquerda(GIRO_CORRECAO);
     else //if(sentido == 'H')
-      direita(100);
+      direita(GIRO_CORRECAO);
     direcao = getDirecao(); //deve obter a orientacao
   }
-
 }
 
-
+/*
+Função que estima a posição do alvo (iBeacon) utilizando trilateração
+3 distâncias são obtidas em 3 posições distintas e estas distância (baseadas na intensidade RSSI)
+os 3 raios mais as  coordenadas das 3 posições farão parte da equação que estimará a posição do alvo
+*/
 char getDestino() {
   float r1, r2, r3;
   float A,B,C,D,E,F;
@@ -753,7 +767,6 @@ char getDestino() {
       if(grid[y_random][x_random]==0)
         destino1=-1;        
     }
-    //Serial.print
     direcao = Dir_N;
     delay(6000);
   }
@@ -884,20 +897,13 @@ char getDestino() {
   
   Serial.print("[P][DESTINO]"); Serial.println(destino1, DEC);
   servoSonar.write(78);
-  delay(50);
-  
+  delay(50);  
   return destino1;
   
 }
 
 /*
-  float getSonar() {
-  delay(50);                      // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
-  unsigned int uS = sonar.ping(); // Send ping, get ping time in microseconds (uS).
-  float ret;
-  ret = uS / US_ROUNDTRIP_CM; // Convert ping time to distance in cm and print result (0 = outside set distance range)
-  return ret;
-  }
+Utiliza a leitura do sonar ultrasônico retornando a distância em cm do próximo obstáculo a frente
 */
 float getSonar() {
   const int numReadings = 10;
@@ -923,7 +929,17 @@ float getSonar() {
   return ret;
 }
 
-
+/*
+Por meio da leitura da bússola digital retorna um valor número correspondente a uma direção 
+Dir_N=0;
+Dir_NE=1;
+Dir_L=2;
+Dir_SE=3;
+Dir_S=4;
+Dir_SO=5;
+Dir_O=6;
+Dir_NO=7;
+*/
 int getDirecao() {
   int fixedHeadingDegrees; // Used to store Heading value
 
@@ -952,7 +968,7 @@ int getDirecao() {
     heading -= 2 * PI;
   }
 
-  // Convert to degrees
+  // Converte para graus
   float headingDegrees = heading * 180 / M_PI;
 
   // To Fix rotation speed of HMC5883L Compass module
@@ -974,14 +990,22 @@ int getDirecao() {
   return ind_heading;
 }
 
+/*
+Considerando a estrutura da matriz de custo onde o custo
+como sendo uma matriz de adjacências esta função efetua 'seta' para 1 a coordenada row,col
+*/
 void SetBitCost(int row, int col) {
   int col_byte = col / 8;
   int col_bit = col % 8;
   col_bit = 7 - col_bit;
   bitSet(costMatrix[row][col_byte], col_bit);
-
 }
 
+/*
+Considerando a estrutura da matriz de custo onde o custo
+como sendo uma matriz de adjacências esta função retorna valor booleano da a coordenada row,col
+que representa a vizinhança entre os nós de Id=row e Id=col 
+*/
 boolean GetBitCost(int row, int col) {
   int col_byte = col / 8;
   int col_bit = col % 8;
@@ -989,7 +1013,14 @@ boolean GetBitCost(int row, int col) {
   return bitRead(costMatrix[row][col_byte], col_bit);
 }
 
-
+/*
+Considerando a estrutura da matriz de custo onde o custo
+como sendo uma matriz de adjacências esta função efetua 'seta' para 1 
+utilizando a função SetBitCost(int id_origem, int id_destino), a 
+coordenada (id_origem, int id_destino)  
+da matriz de custo que indica se há visinhança entre id_origem e id_destino. 
+Antes verifivcando se id_destino é um nó sem bloqueio (grid[row][col] == 1)
+*/
 void calculateCost(char i, int row, int col) {
   if (row >= 0 && col >= 0 && row < ROW && col < COL && grid[row][col] == 1) {
     int j = row * ROW + col;
@@ -998,13 +1029,9 @@ void calculateCost(char i, int row, int col) {
 }
 
 /*
-  void clearGrid1() {
-  for (int i = 0; i < MAXNODES; i++) {
-    EEPROM.write(i, 1);
-  }
-  }
+Limpa a matriz de espaços: deixando todos os nós==1
+indicando não conhecer ainda nenhum obstáculo
 */
-
 void clearGrid() {
   int k = 0;
   for (int i = 0; i < ROW; i++) {
@@ -1014,31 +1041,19 @@ void clearGrid() {
   }
 }
 
-/*
-  void getGrid() {
-  int k = 0;
-  for (int i = 0; i < ROW; i++) {
-    for (int j = 0; j < COL; j++) {
-     // grid[i][j] = EEPROM.read(k++);
-      if (grid[i][j] == 0) {
-        Serial.print("[P][BLOCK]");
-        Serial.println(k, DEC);
-      }
-    }
-  }
-  }
-*/
+
 String trimString(String path) {
   while (path.charAt(path.length() - 1) != ',') path = path.substring(0, path.length() - 1);
   path = path.substring(0, path.length() - 1);
   return path;
 }
 
-
+/*
+Varre a matriz de espaços e calcula os custos, indicando se há visinhaça entre os nós
+*/
 void createMap() {
   int i = 0, j = 0;
   int nodeMatrixCounter = 0;
-  //getting the grid to an array
   for (i = 0; i < ROW; i++) {
     for (j = 0; j < COL; j++) {
       nodeMatrix[nodeMatrixCounter++] = grid[i][j];
@@ -1083,10 +1098,12 @@ void createMap() {
   }
 }
 
-//função para encontrar o vértice de menor distancia, a partir dos vertices não incluidos na arvore de menor caminho
+/*
+função para encontrar o vértice de menor distancia, a partir dos vertices não incluidos 
+na arvore de menor caminho
+*/
 int minDistance(int dist[], bool sptSet[])
-{
-  // Initialize min value
+{  
   int min = INT_MAX, min_index;
 
   for (int v = 0; v < MAXNODES; v++)
@@ -1104,13 +1121,12 @@ int minDistance(int dist[], bool sptSet[])
 void dijkstra(char src)
 {
 
-  int dist[MAXNODES];    //A matriz de saída. dist[i] vai realizar a distância mais curta de src para i
+  int dist[MAXNODES];  //A matriz de saída. dist[i] vai realizar a distância mais curta de src para i
 
   bool sptSet[MAXNODES]; // sptSet[i] será verdadeiro se o vértice i está incluído na árvore de menor
   //caminho ou a menor distância de src para i é finalizado
 
   memset(prev, 0, sizeof(prev));
-
 
   //Inicializar todas as distâncias como infinito e stpSet[] como falsa
   for (int i = 0; i < MAXNODES; i++)
@@ -1137,7 +1153,7 @@ void dijkstra(char src)
         Actualiza dist[V], somente se não está em sptSet, existe uma aresta de u para v, e o peso total de caminho
         de src para v através de u é menor do que o valor actual da dist[v]
       */
-      int custo = int(GetBitCost(u, v)); //Para custo==0 -> celula bloqueada por obstáculo
+      int custo = int(GetBitCost(u, v)); //Para custo==0 -> nó bloqueado por obstáculo
 
       if (!sptSet[v] && custo && dist[u] != INT_MAX
           && dist[u] + custo < dist[v]) {
@@ -1147,12 +1163,16 @@ void dijkstra(char src)
     }
   }
 
-  //imprimir a matriz de distância
   #if DEBUG == 1
+    //imprimir a matriz de distância
     printSolution(dist);
   #endif
 }
 
+/*
+Retorna true caso haja um menor caminho entre a posicao_atual e o destino.
+Caso haja caminho, então preenche o vetor path[] com os nós na ordem em que deve ser percorrido
+*/
 boolean getPath(char dest, char prev[]) {
   char x = dest;
   char inv[MAXNODES];
@@ -1204,7 +1224,9 @@ boolean getPath(char dest, char prev[]) {
   return ret;
 }
 
-
+/*
+Imprime a matriz de distância obtida por dijkstra
+*/
 int printSolution(int dist[])
 {
   Serial.println("Vertex  - Distancias da Origem\n");
@@ -1216,7 +1238,9 @@ int printSolution(int dist[])
   }
 }
 
-
+/*
+Imprime a matriz de custos
+*/
 void printMap() {
   int i = 0;
   int j = 0;
@@ -1232,6 +1256,9 @@ void printMap() {
   Serial.println(); Serial.println();
 }
 
+/*
+Imprime a matriz de espaços, com indicação de onde há obstáculos
+*/
 void printGrid() {
   int i = 0;
   int j = 0;
@@ -1246,12 +1273,6 @@ void printGrid() {
       Serial.print(grid[i][j], DEC);
       Serial.print("]");
       Serial.print("\t");
-      if (grid[i][j] == 0)
-      {
-        //Firmata.sendString('BLOCK');
-        //Firmata.sendDigitalPort(0, i);
-        //Firmata.sendDigitalPort(1, j);
-      }
       ind++;
     }
     Serial.println();
@@ -1270,14 +1291,16 @@ void printGrid() {
   }
 */
 
-
+/*
+Função responsável por orquestrar a execução da movimentação definida pela caminho em path[].
+A cada chamada, trata o próximo passo do path[], desempilhando path[]
+*/
 void passo() {
   boolean andou;
   int C, L, prox;
   int x_atual,y_atual,x_prox,y_prox;
   
   //executa o proximo passo de movimento entre a posicao_atual e o proximo quadro desimplhado de path
-
   int c = 0;
   //primeiro elemento do vetor path  a propria primeira posicao do caminho
   if (path[0] != -1)  {
@@ -1386,7 +1409,7 @@ void passo() {
   }else Serial.println("**** NAO ANDOU *****"); 
 }
 
-void loop() {  
+void loop() {
   #if UNIT_TEST == 1        
     aunit::TestRunner::run();
   #else
@@ -1394,7 +1417,7 @@ void loop() {
   if (novo_obstaculo == true)
   {
     novo_obstaculo = false;
-    createMap(); //cria Matriz de Custos
+    createMap(); //recria Matriz de Custos, após Passo() identificar novo obstáculo
 
     #if DEBUG == 1
       printGrid();
@@ -1409,15 +1432,19 @@ void loop() {
     #endif
     
     Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
-    tem_rota = getPath(destino, prev);
+    tem_rota = getPath(destino, prev); //calcula nova rota
     fim = false;
   }
 
-  if (fim == false)
+  if (fim == false) //indica possibilidades de se chegar ao alvo atual ou se já está no alvo final
   {
-    if (chegou == true)
+    if (chegou == true) //indicando que chegou ao alvo
     {
-      //chegou, mas o destino ainda não eh o real, pois esta fora dos limites da grade
+      /*
+      Chegou, mas o destino ainda não eh o real, pois esta fora dos limites da grade
+      a posição atual do módulo passa a ser a posição central do grid e nova estimativa 
+      de alvo é feita e nova rota traçada.
+      */
       if (destino_fora_da_grade)
       {
         #if DEBUG == 1
@@ -1430,7 +1457,7 @@ void loop() {
         posicao_atual = 64; //posicao inicial no meio do grid
         Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
         destino =  getDestino();
-        direcao = getDirecao(); //deve obter a orientacao
+        direcao = getDirecao(); //deve obter a orientacao da bússola
         createMap(); //cria Matriz de Custos
         
         #if DEBUG == 1
@@ -1463,31 +1490,29 @@ void loop() {
       passo();
     }
   }// if (fim == false)
-  else
+  else  //fim == true; Situação em achou o alvo ou ficou sem rota
   {
-    //fim = true; Situação em achou o alvo ou ficou sem rota
+    
     delay(4000);
-
     char novo_destino;
     destino =  getDestino();
-    if (destino != posicao_atual) {
-      chegou = false;
-      novo_obstaculo = false;
-      fim = false;
-      destino_fora_da_grade = false;
-      direcao = getDirecao(); //deve obter a orientacao
-      clearGrid();
-      createMap(); //cria Matriz de Custos
+    if (destino == posicao_atual) 
+      destino=64; //Caso o novo destino coincida com a posição atual, forço um destino a posição central (64)      
+    
+    chegou = false;
+    novo_obstaculo = false;
+    fim = false;
+    destino_fora_da_grade = false;
+    direcao = getDirecao(); //deve obter a orientacao
+    clearGrid();
+    createMap(); //cria Matriz de Custos
       
-      #if DEBUG == 1
-        printGrid();
-        //if (DEBUG) printMap();
-      #endif
-      dijkstra(posicao_atual);
-
-      tem_rota = getPath(destino, prev);
-    }else
-      destino=64; //Caso o novo destino coincida com a posição atual, forço um destino a posição central (64)
+    #if DEBUG == 1
+      printGrid();
+      //if (DEBUG) printMap();
+    #endif
+    dijkstra(posicao_atual);
+    tem_rota = getPath(destino, prev);  
   }
  #endif
 }
