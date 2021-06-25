@@ -1510,7 +1510,6 @@ void loop() {
       
     #if DEBUG == 1
       printGrid();
-      //if (DEBUG) printMap();
     #endif
     dijkstra(posicao_atual);
     tem_rota = getPath(destino, prev);  
