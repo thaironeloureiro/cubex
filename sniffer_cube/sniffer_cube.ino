@@ -1,7 +1,7 @@
 /*
   Sniffer Cube
   Thairone Simões Loureiro
-  2021
+  2021 
 
 O sketch usa 20390 bytes (8%) de espaço de armazenamento para programas. O máximo são 253952 bytes.
 Variáveis globais usam 4776 bytes (58%) de memória dinâmica, deixando 3416 bytes para variáveis locais. O máximo são 8192 bytes.
