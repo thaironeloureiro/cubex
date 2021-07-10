@@ -135,13 +135,13 @@ void setup()
   destino_fora_da_grade = false; //indica quando o nó de destino está fora da grade mapeada.
 
   posicao_atual = 64; //posicao inicial no meio do grid
+  direcao = Dir_N;
+  corrigir_direcao(Dir_N); //direcao inicial Norte
+  
   Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
 
   clearGrid();
-
   destino =  getDestino();
-
-  direcao = getDirecao(); //deve obter a orientacao
 
   createMap(); //cria Matriz de Custos
   #if DEBUG == 1
@@ -285,7 +285,6 @@ int HM10disc() {
   int rssi_int;
   char data;
   int retorno;
-  int qtd_amostras;
 
   endtime = millis() + timeout; //
 
@@ -293,10 +292,8 @@ int HM10disc() {
   delay(300);
   Serial.println("Get RSSI");
   Serial3.print("AT+DISC?\r\n"); //HM10
-  //delay(30);
-
+  
   retorno = 0; //erro. Não obteve o RSSI do alvo
-  qtd_amostras = 0;
 
   while (estado > -1) {
     if (millis() > endtime) {   // timeout, break
@@ -343,10 +340,8 @@ int HM10disc() {
             rssi_int = rssi.toInt();
             if (String(macAlvo) == mac) {
               Serial.println("RSSI do Alvo:" + rssi);  //debug
-              if (rssi_int != 0) {
-                retorno += rssi_int;
-                qtd_amostras++;
-              }
+              if (rssi_int != 0)
+                retorno = rssi_int;                              
             }
             Serial.print("MAC:" + mac);    //debug
             Serial.println("  RSSI:" + rssi);  //debug
@@ -361,13 +356,8 @@ int HM10disc() {
   //debug
   #if DEBUG == 1
     Serial.println("fim da chamada");
-    Serial.print("Qtd de amostras:"); Serial.println(qtd_amostras);
-    Serial.print("soma retorno:"); Serial.println(retorno);
+    Serial.print("retorno:"); Serial.println(retorno);
   #endif
-
-  if (qtd_amostras > 0)
-    retorno = (int)retorno / qtd_amostras;
-  else retorno = 0;
   
   Serial.print("HM10disc_rssi:"); Serial.println(retorno); //debug
   return retorno;
@@ -376,25 +366,28 @@ int HM10disc() {
 int getRSSI() {
   int rssi;
   int precisao = 0; //Zera a variável para uma nova leitura
-  int qtd_amostras = 0;
+  int qtd_amostras_coletadas = 0;
+  int qtd_amostras = 4;
+  const int rssi_ref_20cm = -50;  // valor refência a 20cm de distância
+  const int rssi_ref_max = -50;  // valor refência a 20cm de distância
 
-  for (int i = 0; i < 3; i++) //Faz a leitura i e armazenar a somatória
+  for (int i = 0; i < qtd_amostras; i++) //Faz a leitura i e armazenar a somatória
   {
     rssi = HM10disc();
 
     Serial.print("rssi:"); Serial.println(rssi); //debug
 
-    if (rssi != 0) {
+    if (rssi != 0 && rssi > rssi_ref_20cm) {
       precisao += rssi;
-      qtd_amostras++;
+      qtd_amostras_coletadas++;
     }
     delay(100);
   }
 
-  Serial.print("qtd_amostras:"); Serial.println(qtd_amostras); //debug
+  Serial.print("qtd_amostras:"); Serial.println(qtd_amostras_coletadas); //debug
 
-  if (qtd_amostras > 0)
-    precisao = (int)(precisao / qtd_amostras);
+  if (qtd_amostras_coletadas > 0)
+    precisao = (int)(precisao / qtd_amostras_coletadas);
   else precisao = 0;
 
   return precisao;
@@ -407,9 +400,9 @@ float getDistancia() {
   int rssi;
   float d=0;
   float expo=0;
-  const int rssi_ref = -75;
+  const int rssi_ref_1m = -75;  // valor refência a 1m de distância
   const float N = 2.0;
-  rssi=rssi_ref;
+  rssi=rssi_ref_1m;
   
   if (rssi_EMULADO) {
     long randNumber;
@@ -418,13 +411,15 @@ float getDistancia() {
   }
   else
     rssi = getRSSI();
+//    while(rssi < rssi_ref_20cm)
+ //     rssi = getRSSI();
 
   #if DEBUG == 1
     Serial.print("rssi coletado em getDistancia:");
     Serial.println(rssi);
   #endif
 
-  expo = ((float)(rssi - rssi_ref) / (float)(-10 * N));
+  expo = ((float)(rssi - rssi_ref_1m) / (float)(-10 * N));
   #if DEBUG == 1
     Serial.print("Expo:"); Serial.println(expo);
   #endif
@@ -480,6 +475,8 @@ boolean frente(int step_motor) {
   boolean tem_bloco_a_frente = false;
   int x_obstaculo, y_obstaculo, ind_obstaculo, dist_obs_em_quadros, x_afrente, y_afrente;
 
+  Serial.println("Em frente...");
+  delay(100);
   servoSonar.write(78); delay(50);
 
   //camputara coordenadas da posição atual
@@ -495,7 +492,8 @@ boolean frente(int step_motor) {
   else if (direcao == Dir_L) x_afrente++;
 
   //a depender da direção atual, verificar se a posição a frente está no limite ou é um bloqueio
-  if (grid[y_afrente][x_afrente] == 1 && x_afrente >= 0 && y_afrente >= 0 && x_afrente < COL && y_afrente < ROW) {
+  if (grid[y_afrente][x_afrente] == node_free && x_afrente >= 0 && y_afrente >= 0 && x_afrente < COL && y_afrente < ROW) 
+  {
 
     dist_obs = getSonar();
     if (dist_obs > 2.0 and dist_obs < 60.0)
@@ -504,23 +502,43 @@ boolean frente(int step_motor) {
     Serial.println("SONARRRRRR");
     //se houver obstácuo a frente...
     if (dist_obs > 0) {
-      #if DEBUG == 1
+      //#if DEBUG == 1
         Serial.print("Obstaculo a frente: ");
         Serial.print(dist_obs);
         Serial.print("cm / ");
         Serial.print(" quadros a frente: ");
         Serial.println(dist_obs_em_quadros);        
-      #endif
+     // #endif
 
       //deslocamente cartesiano de uma casa com base na orientacao
+      /* 
+       *  essa abordagem pegava a posição do obstáculo ou quando esta estava fora 
+       *  do limite do grid, assumia a posição limite como obstáculo
       if (direcao == Dir_N) y_obstaculo = max(0, y_obstaculo - dist_obs_em_quadros); //a diferença ou zero (caso o deslocamento seja negativo)
       if (direcao == Dir_S) y_obstaculo = min(ROW - 1, y_obstaculo + dist_obs_em_quadros);
       if (direcao == Dir_O) x_obstaculo = max(0, x_obstaculo - dist_obs_em_quadros);
       if (direcao == Dir_L) x_obstaculo = min(COL - 1, x_obstaculo + dist_obs_em_quadros);
+      */
+
       
-      ind_obstaculo = getIndice(x_obstaculo, y_obstaculo);
-      //EEPROM.write(ind_obstaculo, 1); //grava na eeprom informacao do obstaculo
-      grid[y_obstaculo][x_obstaculo] = 0;
+      if (direcao == Dir_N) y_obstaculo = y_obstaculo - dist_obs_em_quadros; 
+      if (direcao == Dir_S) y_obstaculo = y_obstaculo + dist_obs_em_quadros;
+      if (direcao == Dir_O) x_obstaculo = x_obstaculo - dist_obs_em_quadros;
+      if (direcao == Dir_L) x_obstaculo = x_obstaculo + dist_obs_em_quadros;
+
+      /*só gera nó bloqueado se as coordenadas estiverem dentro do grid atual*/
+      if(x_obstaculo>=0 && x_obstaculo<COL && y_obstaculo>=0 && y_obstaculo<ROW){
+        ind_obstaculo = getIndice(x_obstaculo, y_obstaculo);
+        grid[y_obstaculo][x_obstaculo] = node_block;
+        
+        novo_obstaculo = true;
+        Serial.print("[P][BLOCK]"); Serial.println(ind_obstaculo, DEC);
+
+        #if DEBUG == 1       
+          Serial.print(" x_obstaculo:");Serial.print(x_obstaculo);
+          Serial.print(" y_obstaculo:");Serial.println(y_obstaculo);
+        #endif
+      }
 
       int y_atual = getRow(posicao_atual);
       int x_atual = getCol(posicao_atual);
@@ -528,13 +546,7 @@ boolean frente(int step_motor) {
         Serial.print("posicao_atual:");Serial.print(posicao_atual, DEC);
         Serial.print(" x:");Serial.print(x_atual);
         Serial.print(" y:");Serial.print(y_atual);
-        Serial.print(" x_obstaculo:");Serial.print(x_obstaculo);
-        Serial.print(" y_obstaculo:");Serial.println(y_obstaculo);
-      #endif
-      
-      novo_obstaculo = true;
-      Serial.print("[P][BLOCK]"); Serial.println(ind_obstaculo, DEC);
-      
+      #endif              
     }
 
     //verificar tb distancia maior que a dimencao do quadro
@@ -624,6 +636,8 @@ void esquerda(int step_motor) {
   delay(step_motor);
   parar(1000);
   servoSonar.write(78);
+  
+  corrigir_direcao(direcao);
   Serial.print("[P][DIRECAO]"); Serial.println(direcao);
 }
 
@@ -667,11 +681,14 @@ void direita(int step_motor) {
         break;
     }   
   }
+  
   servoLeft.write(servoLeft_frente);
   servoRight.write(servoRight_re);
   delay(step_motor);
   parar(1000);
   servoSonar.write(78);
+
+  corrigir_direcao(direcao);
   Serial.print("[P][DIRECAO]"); Serial.println(direcao);
 }
 
@@ -747,27 +764,28 @@ void corrigir_direcao(int direcao_teorica)
 Função que estima a posição do alvo (iBeacon) utilizando trilateração
 3 distâncias são obtidas em 3 posições distintas e estas distância (baseadas na intensidade RSSI)
 os 3 raios mais as  coordenadas das 3 posições farão parte da equação que estimará a posição do alvo
+https://github.com/armandokeller/trilateracao/blob/main/trilateracao.py
 */
 char getDestino() {
   float r1, r2, r3;
   float A,B,C,D,E,F;
   int dest_x, dest_y, x1, x2, x3, y1, y2, y3;
-  char destino1;
+  char destino_estimado;
   boolean andou;
   r1=r2=r3=0;
   A=B=C=D=E=F=0;
   
   if(destino_ALEATORIO){
-    destino1=-1;
+    destino_estimado=-1;
     
     long randNumber;
-    while(destino1<0){
+    while(destino_estimado<0){
       randNumber = random(0, 143);
-      destino1 = int(randNumber);
+      destino_estimado = int(randNumber);
       int x_random = getCol((int)randNumber);
       int y_random = getRow((int)randNumber);
-      if(grid[y_random][x_random]==0)
-        destino1=-1;        
+      if(grid[y_random][x_random]==node_block)
+        destino_estimado=-1;        
     }
     direcao = Dir_N;
     delay(6000);
@@ -787,36 +805,35 @@ char getDestino() {
 
     Serial.print("[P][DISTANCIA1]"); Serial.println(r1, DEC);
     delay(100);
-    #if DEBUG == 1
+   // #if DEBUG == 1
       Serial.print("GETDestino ATUAL:");
       Serial.print(posicao_atual, DEC);
       Serial.print(" X1: ");
       Serial.print(x1);
       Serial.print("\t Y1: ");
       Serial.println(y1);
-    #endif
+   // #endif
   
     //CAPTURA DISTANCIA 2
     //andar (vezes) para frente, desde que não haja obstaculo
-    for (int vezes = 0; vezes < 3; vezes++) {
+    for (int vezes = 0; vezes < 5; vezes++) {
       andou = frente(PASSO);
       if (andou == true) {
         Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
       } else { //andou==false, significa que não pode ir para frente, nesse caso gira para a direita
         direita(GIRO_90); //direcao a Leste
-        corrigir_direcao(direcao); //ajustar direcao
       }
     }
     x2 = getCol(posicao_atual);
     y2 = getRow(posicao_atual);
-    #if DEBUG == 1
+    //#if DEBUG == 1
         Serial.print("GETDestino ATUAL:");
         Serial.print(posicao_atual, DEC);
         Serial.print(" X2: ");
         Serial.print(x2);
         Serial.print("\t Y2: ");
         Serial.println(y2);
-    #endif
+    //#endif
     servoSonar.write(78);
     delay(50);
     r2 = getDistancia();
@@ -826,27 +843,25 @@ char getDestino() {
     //CAPTURA DISTANCIA 2
   
     direita(GIRO_90); //direcao a Leste
-    corrigir_direcao(direcao); //ajustar direcao
     //andar (vezes) para frente, desde que não haja obstaculo
-    for (int vezes = 0; vezes < 3; vezes++) {
+    for (int vezes = 0; vezes < 4; vezes++) {
       andou = frente(PASSO);
       if (andou == true) {      
         Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
       } else { //andou==false, significa que não pode ir para frente, nesse caso gira para a direita
-        direita(GIRO_90); //direcao a Leste
-        corrigir_direcao(direcao); //ajustar direcao
+        esquerda(GIRO_90); //direcao a Leste
       }
     }
     x3 = getCol(posicao_atual);
     y3 = getRow(posicao_atual);
-    #if DEBUG == 1
+    //#if DEBUG == 1
         Serial.print("GETDestino ATUAL:");
         Serial.print(posicao_atual, DEC);
         Serial.print(" X3: ");
         Serial.print(x3);
         Serial.print("\t Y3: ");
         Serial.println(y3);
-    #endif
+    //#endif
     servoSonar.write(180);
     delay(50);
     r3 = getDistancia();
@@ -865,10 +880,10 @@ char getDestino() {
     dest_x = (int)((C*E - F*B) / (E*A - B*D));
     dest_y = (int)((C*D - A*F) / (B*D - A*E));
 
-    #if DEBUG == 1
+   // #if DEBUG == 1
       Serial.print("dest_x:"); Serial.println(dest_x, DEC);
       Serial.print("dest_y:"); Serial.println(dest_y, DEC);
-    #endif 
+    //#endif 
 
     if (dest_x < 0)
     {
@@ -894,14 +909,13 @@ char getDestino() {
     }
     if (destino_fora_da_grade)
       Serial.println("Destino fora da Grade. Posição proxima estimada.");
-    destino1 = getIndice(dest_x, dest_y);
+    destino_estimado = getIndice(dest_x, dest_y);
   }
   
-  Serial.print("[P][DESTINO]"); Serial.println(destino1, DEC);
+  Serial.print("[P][DESTINO]"); Serial.println(destino_estimado, DEC);
   servoSonar.write(78);
   delay(50);  
-  return destino1;
-  
+  return destino_estimado;
 }
 
 /*
@@ -1021,10 +1035,10 @@ como sendo uma matriz de adjacências esta função efetua 'seta' para 1
 utilizando a função SetBitCost(int id_origem, int id_destino), a 
 coordenada (id_origem, int id_destino)  
 da matriz de custo que indica se há visinhança entre id_origem e id_destino. 
-Antes verifivcando se id_destino é um nó sem bloqueio (grid[row][col] == 1)
+Antes verifivcando se id_destino é um nó sem bloqueio (grid[row][col] == node_free)
 */
 void calculateCost(char i, int row, int col) {
-  if (row >= 0 && col >= 0 && row < ROW && col < COL && grid[row][col] == 1) {
+  if (row >= 0 && col >= 0 && row < ROW && col < COL && grid[row][col] == node_free) {
     int j = row * ROW + col;
     SetBitCost(i, j);
   }
@@ -1038,7 +1052,7 @@ void clearGrid() {
   int k = 0;
   for (int i = 0; i < ROW; i++) {
     for (int j = 0; j < COL; j++) {
-      grid[i][j] = 1;
+      grid[i][j] = node_free;
     }
   }
 }
@@ -1332,8 +1346,13 @@ void passo() {
   #endif
   
   Serial.print("[P][PROXIMO]"); Serial.println(prox);
+  Serial.print("[D][DIRECAO_antes]"); Serial.println(direcao);
+  corrigir_direcao(direcao); //direcao inicial Norte
+  Serial.print("[D][DIRECAO_despois]"); Serial.println(direcao);
+  
   switch (direcao) {
   case Dir_N:
+    Serial.println("N");
     if(y_prox < y_atual){ // p/ cima em relação a grid
       andou=frente(PASSO);
     }
@@ -1351,6 +1370,7 @@ void passo() {
     }
     break;
   case Dir_L:
+    Serial.println("L");
     if(y_prox < y_atual){ // p/ cima em relação a grid
       esquerda(GIRO_90);
       andou=frente(PASSO);
@@ -1368,6 +1388,7 @@ void passo() {
     }
     break;
   case Dir_S:
+    Serial.println("S");
     if(y_prox < y_atual){ // p/ cima em relação a grid
       esquerda(GIRO_180);
       andou=frente(PASSO);
@@ -1385,6 +1406,7 @@ void passo() {
     }
     break;
   case Dir_O:
+    Serial.println("O");
     if(y_prox < y_atual){ // p/ cima em relação a grid
       direita(GIRO_90);
       andou=frente(PASSO);
@@ -1458,8 +1480,9 @@ void loop() {
         clearGrid();
         posicao_atual = 64; //posicao inicial no meio do grid
         Serial.print("[P][ATUAL]"); Serial.println(posicao_atual, DEC);
+        
         destino =  getDestino();
-        direcao = getDirecao(); //deve obter a orientacao da bússola
+        corrigir_direcao(direcao); //direcao inicial Norte
         createMap(); //cria Matriz de Custos
         
         #if DEBUG == 1
@@ -1505,7 +1528,7 @@ void loop() {
     novo_obstaculo = false;
     fim = false;
     destino_fora_da_grade = false;
-    direcao = getDirecao(); //deve obter a orientacao
+    corrigir_direcao(direcao);
     clearGrid();
     createMap(); //cria Matriz de Custos
       
