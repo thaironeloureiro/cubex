@@ -490,7 +490,9 @@ boolean frente(int step_motor) {
   boolean ret = false;
   boolean tem_bloco_a_frente = false;
   int x_obstaculo, y_obstaculo, ind_obstaculo, dist_obs_em_quadros, x_afrente, y_afrente;
-
+  
+  x_obstaculo=y_obstaculo=ind_obstaculo=dist_obs_em_quadros=x_afrente=y_afrente=0;
+  
   delay(100);
   servoSonar.write(78); delay(50);
 
@@ -536,10 +538,10 @@ boolean frente(int step_motor) {
       */
 
       
-      if (direcao == Dir_N) y_obstaculo = y_obstaculo - dist_obs_em_quadros; 
-      if (direcao == Dir_S) y_obstaculo = y_obstaculo + dist_obs_em_quadros;
-      if (direcao == Dir_O) x_obstaculo = x_obstaculo - dist_obs_em_quadros;
-      if (direcao == Dir_L) x_obstaculo = x_obstaculo + dist_obs_em_quadros;
+      if (direcao == Dir_N) y_obstaculo = y_obstaculo-dist_obs_em_quadros; 
+      if (direcao == Dir_S) y_obstaculo = y_obstaculo+dist_obs_em_quadros;
+      if (direcao == Dir_O) x_obstaculo = x_obstaculo-dist_obs_em_quadros;
+      if (direcao == Dir_L) x_obstaculo = x_obstaculo+dist_obs_em_quadros;
 
       /*só gera nó bloqueado se as coordenadas estiverem dentro do grid atual*/
       if(x_obstaculo>=0 && x_obstaculo<COL && y_obstaculo>=0 && y_obstaculo<ROW){
