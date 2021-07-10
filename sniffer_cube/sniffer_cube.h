@@ -26,6 +26,9 @@ const int MAX_DISTANCE=200; // Maximum distance we want to ping for (in centimet
 #define destino_ALEATORIO 0
 #define bussola_EMULADA 1
 
+const int node_free = 1;
+const int node_block = 0;
+
 const int servoLeft_parado=82;
 const int servoLeft_re=79;
 const int servoLeft_frente=89;
@@ -33,7 +36,8 @@ const int servoLeft_frente=89;
 const int servoRight_parado=80;
 const int servoRight_re=86;
 const int servoRight_frente=76;
-#define macAlvo  "FC58FAB45824"
+//#define macAlvo  "FC58FAB45824"
+const String macAlvo="C1BD0B616F4D";
 
 const int HM10_timeout=800;  // Wait 800ms each time for BLE to response, depending on your application, adjust this value accordingly
 const int HM10_BUFFER_LENGTH=100;
