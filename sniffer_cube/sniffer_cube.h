@@ -37,7 +37,7 @@ const int servoRight_parado=80;
 const int servoRight_re=86;
 const int servoRight_frente=76;
 //#define macAlvo  "FC58FAB45824"
-#define macAlvo  "C1BD0B616F4D"
+const String macAlvo="C1BD0B616F4D";
 
 const int HM10_timeout=800;  // Wait 800ms each time for BLE to response, depending on your application, adjust this value accordingly
 const int HM10_BUFFER_LENGTH=100;
